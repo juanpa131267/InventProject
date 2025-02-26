@@ -10,6 +10,7 @@ class mod_Proveedores extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'PROVEEDORES';
     protected $fillable = ['NOMBRE', 'TELEFONO', 'CORREO', 'DIRECCION'];
     protected $dates = ['DELETED_AT'];

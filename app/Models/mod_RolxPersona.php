@@ -13,6 +13,7 @@ class mod_RolxPersona extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'ROLXPERSONA';
     protected $fillable = ['ID_ROLES', 'ID_PERSONAS'];
     protected $primaryKey = 'ID';

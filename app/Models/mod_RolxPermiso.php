@@ -12,6 +12,7 @@ class mod_RolxPermiso extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'ROLXPERMISO';
     protected $fillable = ['ID_ROLES', 'ID_PERMISOS'];
     protected $primaryKey = 'ID';

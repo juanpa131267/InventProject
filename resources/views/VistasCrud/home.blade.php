@@ -11,14 +11,6 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group">
-                        <a href="{{ url('/departamentos-index') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            Departamentos
-                            <span class="badge bg-primary rounded-pill">Gestionar</span>
-                        </a>
-                        <a href="{{ url('/municipios-index') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            Municipios
-                            <span class="badge bg-primary rounded-pill">Gestionar</span>
-                        </a>
                         <a href="{{ url('/personas-index') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             Personas
                             <span class="badge bg-primary rounded-pill">Gestionar</span>

@@ -10,8 +10,10 @@ class mod_Rol extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'ROLES';  
     protected $fillable = ['DESCRIPCION'];
+    protected $primaryKey = 'ID';
     protected $dates = ['DELETED_AT'];
     public $timestamps = false;
     public $incrementing = false;

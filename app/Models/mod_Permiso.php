@@ -11,6 +11,7 @@ class mod_Permiso extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'PERMISOS';
     protected $fillable = ['NOMBRE', 'DESCRIPCION', 'ESTADO'];
     protected $primaryKey = 'ID';

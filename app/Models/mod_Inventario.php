@@ -10,6 +10,7 @@ class mod_Inventario extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'INVENTARIOS';
     protected $fillable = ['NOMBRE', 'ID_FOTOS', 'ID_USUARIOS'];
     protected $dates = ['DELETED_AT'];

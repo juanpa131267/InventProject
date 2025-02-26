@@ -10,6 +10,7 @@ class mod_ArticuloxCategoria extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'ARTICULOXCATEGORIA';
     protected $fillable = ['ID_ARTICULOS', 'ID_CATEGORIAS'];
     protected $dates = ['DELETED_AT'];

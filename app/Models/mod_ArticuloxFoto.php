@@ -10,6 +10,7 @@ class mod_ArticuloxFoto extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'ARTICULOXFOTO';
     protected $fillable = ['ID_ARTICULOS', 'ID_FOTOS'];
     protected $dates = ['DELETED_AT'];

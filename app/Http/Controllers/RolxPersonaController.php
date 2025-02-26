@@ -14,285 +14,191 @@ use Symfony\Component\HttpFoundation\Response;
  *     schema="RolxPersona",
  *     type="object",
  *     title="RolxPersona",
- *     required={"rol_id", "persona_id"},
- *     @OA\Property(property="id", type="integer", readOnly=true),
- *     @OA\Property(property="rol_id", type="integer"),
- *     @OA\Property(property="persona_id", type="integer")
+ *     description="Modelo de Rol por Persona",
+ *     required={"ID_ROLES", "ID_PERSONAS"},
+ *     @OA\Property(property="ID_ROLES", type="integer", description="ID del rol asociado"),
+ *     @OA\Property(property="ID_PERSONAS", type="integer", description="ID de la persona asociada")
  * )
  */
 
-class RolxPersonaController extends Controller
-{
+ class RolxPersonaController extends Controller
+ {
+     /**
+      * @OA\Get(
+      *     path="/api/rolxpersona",
+      *     summary="Obtener todas las asignaciones de roles a personas",
+      *     tags={"RolxPersona"},
+      *     @OA\Response(
+      *         response=200,
+      *         description="Lista de roles asignados a personas",
+      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RolxPersona"))
+      *     )
+      * )
+      */
+     public function index()
+     {
+         return response()->json(mod_RolxPersona::all(), Response::HTTP_OK);
+     }
+ 
+     /**
+      * @OA\Post(
+      *     path="/api/rolxpersona",
+      *     summary="Asignar un nuevo rol a una persona",
+      *     tags={"RolxPersona"},
+      *     @OA\RequestBody(
+      *         required=true,
+      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
+      *     ),
+      *     @OA\Response(
+      *         response=201,
+      *         description="Rol asignado exitosamente"
+      *     )
+      * )
+      */
+     public function store(Request $request)
+     {
+         $request->validate([
+             'ID_ROLES' => 'required|integer',
+             'ID_PERSONAS' => 'required|integer'
+         ]);
+ 
+         $rolxpersona = mod_RolxPersona::create($request->all());
+         return response()->json($rolxpersona, Response::HTTP_CREATED);
+     }
+ 
+     /**
+      * @OA\Get(
+      *     path="/api/rolxpersona/{id}",
+      *     summary="Obtener una asignación de rol por ID",
+      *     tags={"RolxPersona"},
+      *     @OA\Parameter(
+      *         name="id",
+      *         in="path",
+      *         description="ID de la asignación",
+      *         required=true,
+      *         @OA\Schema(type="integer")
+      *     ),
+      *     @OA\Response(
+      *         response=200,
+      *         description="Información de la asignación de rol",
+      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
+      *     )
+      * )
+      */
+     public function show($id)
+     {
+         $rolxpersona = mod_RolxPersona::find($id);
+         if (!$rolxpersona) {
+             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+         }
+         return response()->json($rolxpersona, Response::HTTP_OK);
+     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/rolxpersona",
-     *     summary="Obtener todas las relaciones entre roles y personas",
-     *     tags={"RolxPersona"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de roles por persona"
-     *     )
-     * )
-     */
+     /**
+      * @OA\Put(
+      *     path="/api/rolxpersona/{id}",
+      *     summary="Actualizar una asignación de rol",
+      *     tags={"RolxPersona"},
+      *     @OA\Parameter(
+      *         name="id",
+      *         in="path",
+      *         description="ID de la asignación",
+      *         required=true,
+      *         @OA\Schema(type="integer")
+      *     ),
+      *     @OA\RequestBody(
+      *         required=true,
+      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
+      *     ),
+      *     @OA\Response(
+      *         response=200,
+      *         description="Asignación actualizada"
+      *     )
+      * )
+      */
 
-    // Mostrar la lista de roles asignados a personas
-    public function index(Request $request)
-    {
-        $search = $request->query('q'); // Buscador por persona
-    
-        try {
-            // Buscar registros según el nombre de la persona
-            $rolxpersona = mod_RolxPersona::with(['persona', 'rol'])
-                ->when($search, function($query, $search) {
-                    return $query->whereHas('persona', function($q) use ($search) {
-                        $q->where('nombres', 'like', "%{$search}%"); // Filtrar solo por nombre de persona
-                    });
-                })
-                ->get();
-    
-            // Filtrar los registros que tienen relación con persona y rol
-            $rolxpersona = $rolxpersona->filter(function($item) {
-                return $item->persona && $item->rol; // Asegurarse de que ambas relaciones existan
-            });
-    
-            // Comprobar si hay registros
-            return response()->json($rolxpersona->values()->all(), Response::HTTP_OK); // Retornar el array directamente
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener los roles asignados: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Mostrar la vista de creación
-    public function create()
-    {
-        $roles = mod_Rol::all();
-        $personasSinRol = mod_Persona::whereDoesntHave('roles')->get(); // Aquí se usa el modelo correctamente
-        
-        return view('VistasCrud.VistasRolxPersona.create', compact('personasSinRol', 'roles'));
-    }
-
-    /**
-     * @OA\Post(
-     *     path="/api/rolxpersona",
-     *     summary="Crear una nueva relación entre rol y persona",
-     *     tags={"RolxPersona"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"rol_id", "persona_id"},
-     *             @OA\Property(property="rol_id", type="integer", example=1),
-     *             @OA\Property(property="persona_id", type="integer", example=1)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Relación creada con éxito"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Datos inválidos"
-     *     )
-     * )
-     */
-
-    // Almacenar un nuevo rol asignado a una persona
-    public function store(Request $request)
-    {
-        // Validar los datos
-        $validatedData = $request->validate([
-            'rol_id' => 'required|exists:roles,id',
-            'persona_id' => 'required|exists:personas,id',
-        ]);
-
-        // Verificar si la persona ya tiene un rol asignado
-        $personaConRol = mod_RolxPersona::where('persona_id', $request->persona_id)->exists();
-        
-        if ($personaConRol) {
-            return redirect()->back()->with('error', 'Esta persona ya tiene un rol asignado.');
-        }
-
-        try {
-            // Crear la asignación rol-persona
-            mod_RolxPersona::create($validatedData);
-            return redirect(url('/rolxpersona-index'))->with('success', 'Rol asignado exitosamente.');
-        } catch (\Exception $e) {
-            return redirect(url('/rolxpersona-index'))->with('error', 'No se pudo asignar el rol. Intente nuevamente.');
-        }
-    }
-    
-
-    // Mostrar la vista de edición
-    public function edit($id)
-    {
-        try {
-            $rolxpersona = mod_RolxPersona::findOrFail($id);
-            $personas = \App\Models\mod_Persona::all(); // Obtener personas
-            $roles = \App\Models\mod_Rol::all(); // Obtener roles
-    
-            return view('VistasCrud.VistasRolxPersona.edit', compact('rolxpersona', 'personas', 'roles'));
-        } catch (\Exception $e) {
-            return redirect(url('/rolxpersona-index'))->with('error', 'Asignación no encontrada');
-        }
-    }
-
-    /**
-     * @OA\Put(
-     *     path="/api/rolxpersona/{id}",
-     *     summary="Actualizar una relación entre rol y persona",
-     *     tags={"RolxPersona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la relación rolxpersona",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="rol_id", type="integer", example=1),
-     *             @OA\Property(property="persona_id", type="integer", example=1)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Relación actualizada con éxito"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Relación no encontrada"
-     *     )
-     * )
-     */
-
-    // Actualizar una asignación existente
-    public function update(Request $request, $id)
-    {
-        $rolxpersona = mod_RolxPersona::find($id);
-        
-        if (!$rolxpersona) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-
-        $validatedData = $request->validate([
-            'rol_id' => 'required|exists:roles,id',
-            'persona_id' => 'required|exists:personas,id',
-        ]);
-
-        try {
-            $rolxpersona->update($validatedData);
-            return redirect(url('/rolxpersona-index'))->with('success', 'Asignación actualizada exitosamente');
-        } catch (\Exception $e) {
-            return redirect(url('/rolxpersona-index'))->with('error', 'Error al actualizar la asignación');
-        }
-    }
-
-    /**
-     * @OA\Delete(
-     *     path="/api/rolxpersona/{id}",
-     *     summary="Eliminar una relación entre rol y persona",
-     *     tags={"RolxPersona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la relación rolxpersona",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Relación eliminada con éxito"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Relación no encontrada"
-     *     )
-     * )
-     */
-
-    // Eliminar una asignación lógicamente
-    public function destroy($id)
-    {
-        $rolxpersona = mod_RolxPersona::find($id);
-    
-        if (!$rolxpersona) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-    
-        try {
-            $rolxpersona->delete();
-            return response()->json(null, Response::HTTP_NO_CONTENT);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al eliminar asignación'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Mostrar asignaciones eliminadas
-    public function deleted()
-    {
-        $asignacionesEliminadas = mod_RolxPersona::onlyTrashed()->get();
-        return view('VistasCrud.VistasRolxPersona.deleted', compact('asignacionesEliminadas'));
-    }
-
-    // Restaurar una asignación eliminada
-    public function restore($id)
-    {
-        $rolxpersona = mod_RolxPersona::withTrashed()->findOrFail($id);
-        $rolxpersona->restore();
-
-        return redirect()->route('rolxpersona.deleted')->with('success', 'Asignación restaurada exitosamente.');
-    }
-
-    // Eliminar completamente una asignación
-    public function forceDelete($id)
-    {
-        $rolxpersona = mod_RolxPersona::withTrashed()->findOrFail($id);
-        $rolxpersona->forceDelete();
-
-        return redirect()->route('rolxpersona.deleted')->with('success', 'Asignación eliminada permanentemente.');
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/rolxpersona/{id}",
-     *     summary="Obtener una relación específica entre rol y persona",
-     *     tags={"RolxPersona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la relación rolxpersona",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Detalles de la relación"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Relación no encontrada"
-     *     )
-     * )
-     */
-
-    //mostar la vista de asignaciones
-    public function show($id)
-    {
-        try {
-            $rolxpersona = mod_RolxPersona::findOrFail($id);
-            return response()->json($rolxpersona, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-    }
-    
-    // Validar los datos de una asignación
-    private function validateRolxPersona(Request $request, $id = null)
-    {
-        return Validator::make($request->all(), [
-            'rol_id' => 'required|exists:roles,id',
-            'persona_id' => 'required|exists:personas,id',
-        ]);
-    }
-}
+     public function update(Request $request, $id)
+     {
+         $rolxpersona = mod_RolxPersona::find($id);
+         if (!$rolxpersona) {
+             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+         }
+         $request->validate([
+             'ID_ROLES' => 'required|integer',
+             'ID_PERSONAS' => 'required|integer'
+         ]);
+         $rolxpersona->update($request->all());
+         return response()->json($rolxpersona, Response::HTTP_OK);
+     }
+ 
+     /**
+      * @OA\Delete(
+      *     path="/api/rolxpersona/{id}",
+      *     summary="Eliminar una asignación de rol",
+      *     tags={"RolxPersona"},
+      *     @OA\Parameter(
+      *         name="id",
+      *         in="path",
+      *         description="ID de la asignación",
+      *         required=true,
+      *         @OA\Schema(type="integer")
+      *     ),
+      *     @OA\Response(
+      *         response=204,
+      *         description="Asignación eliminada"
+      *     )
+      * )
+      */
+     public function destroy($id)
+     {
+         $rolxpersona = mod_RolxPersona::find($id);
+         if (!$rolxpersona) {
+             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+         }
+         $rolxpersona->delete();
+         return response()->json(null, Response::HTTP_NO_CONTENT);
+     }
+ 
+     /**
+      * @OA\Get(
+      *     path="/api/rolxpersona/eliminados",
+      *     summary="Obtener asignaciones eliminadas",
+      *     tags={"RolxPersona"},
+      *     @OA\Response(
+      *         response=200,
+      *         description="Lista de asignaciones eliminadas",
+      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RolxPersona"))
+      *     )
+      * )
+      */
+     public function deleted()
+     {
+         return response()->json(mod_RolxPersona::onlyTrashed()->get(), Response::HTTP_OK);
+     }
+ 
+     /**
+      * @OA\Put(
+      *     path="/api/rolxpersona/restore/{id}",
+      *     summary="Restaurar una asignación eliminada",
+      *     tags={"RolxPersona"},
+      *     @OA\Parameter(
+      *         name="id",
+      *         in="path",
+      *         description="ID de la asignación",
+      *         required=true,
+      *         @OA\Schema(type="integer")
+      *     ),
+      *     @OA\Response(
+      *         response=200,
+      *         description="Asignación restaurada"
+      *     )
+      * )
+      */
+     public function restore($id)
+     {
+         $rolxpersona = mod_RolxPersona::withTrashed()->findOrFail($id);
+         $rolxpersona->restore();
+         return response()->json($rolxpersona, Response::HTTP_OK);
+     }
+ }
+ 

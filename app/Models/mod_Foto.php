@@ -10,8 +10,9 @@ class mod_Foto extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'FOTOS';
-    protected $fillable = ['URL', 'DESCRIPCION', 'FECHA_SUBIDA'];
+    protected $fillable = ['URL', 'DESCRIPCION'];
     protected $dates = ['DELETED_AT'];
     protected $primaryKey = 'ID';
     public $timestamps = false;

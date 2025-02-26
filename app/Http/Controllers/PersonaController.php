@@ -5,6 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\mod_Persona;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Info(
+ *    title="API de Personas",
+ *    version="1.0.0",
+ *    description="API de Personas",
+ * )
+ */
+
+/**
+ * @OA\Schema(
+ *     schema="Persona",
+ *     type="object",
+ *     title="Persona",
+ *     description="Modelo de Persona",
+ *     required={"CEDULA", "NOMBRES", "APELLIDO", "TELEFONO", "CORREO"},
+ *     @OA\Property(property="CEDULA", type="string", description="Cédula de la persona"),
+ *     @OA\Property(property="NOMBRES", type="string", description="Nombres de la persona"),
+ *     @OA\Property(property="APELLIDO", type="string", description="Apellido de la persona"),
+ *     @OA\Property(property="TELEFONO", type="string", description="Teléfono de la persona"),
+ *     @OA\Property(property="CORREO", type="string", format="email", description="Correo de la persona")
+ * )
+ */
 
 class PersonaController extends Controller
 {
@@ -110,7 +134,7 @@ class PersonaController extends Controller
         }
 
         $request->validate([
-            'CEDULA' => 'required|string|max:255|unique:PERSONAS,CEDULA,' . $id,
+            'CEDULA' => 'required|string|max:255|unique:PERSONAS,CEDULA,' . $id . ',ID',
             'NOMBRES' => 'required|string|max:255',
             'APELLIDO' => 'required|string|max:255',
             'TELEFONO' => 'required|string|max:15',

@@ -7,11 +7,13 @@ use App\Models\mod_RolxPersona;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OpenApi\Annotations as OA;
 
 class mod_Persona extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'PERSONAS';
     protected $fillable = ['CEDULA', 'NOMBRES', 'APELLIDO', 'TELEFONO', 'CORREO'];
     protected $dates = ['DELETED_AT'];

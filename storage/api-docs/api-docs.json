@@ -1,0 +1,2970 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Interacción con Base de Datos FireBird",
+        "description": "API para la gestión",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/articulos": {
+            "get": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Obtener todos los artículos",
+                "operationId": "021362b92b70d8c24f566bb0db7178d5",
+                "responses": {
+                    "200": {
+                        "description": "Lista de artículos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Articulo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Crear un nuevo artículo",
+                "operationId": "1576d3467aeea24559ab2a70e9a963d9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Articulo"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Artículo creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/articulos/{id}": {
+            "get": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Obtener un artículo por ID",
+                "operationId": "53ebb83e59d006abd1bd488176d98899",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del artículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del artículo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Articulo"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Actualizar un artículo",
+                "operationId": "8b012fffca1a2f25e37727c1097c0471",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del artículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Articulo"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Artículo actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Eliminar un artículo",
+                "operationId": "de4809e8ad8eea751584f66ed2aab554",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del artículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Artículo eliminado"
+                    }
+                }
+            }
+        },
+        "/api/articulos/eliminados": {
+            "get": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Obtener todos los artículos eliminados",
+                "operationId": "f8c19520b37a749ae071db26a977221e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de artículos eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Articulo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/articulos/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Articulo"
+                ],
+                "summary": "Restaurar un artículo eliminado",
+                "operationId": "7bbccb6309168f9f5e5d456b192bb12c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del artículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Artículo restaurado"
+                    }
+                }
+            }
+        },
+        "/api/articuloxcategoria": {
+            "get": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Obtener todas las asignaciones de artículos a categorías",
+                "operationId": "596d671b7d0d3e4f792e30d80abdef26",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ArticuloxCategoria"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Asignar un nuevo artículo a una categoría",
+                "operationId": "2666e58bda8552055dddb75d47672cc3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxCategoria"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asignación creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/articuloxcategoria/{id}": {
+            "get": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Obtener una asignación de artículo por ID",
+                "operationId": "a908f932efffaba9bfd61765b67ca050",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la asignación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticuloxCategoria"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Actualizar una asignación de artículo",
+                "operationId": "bd5000a25c810cccb19806db8a4b488b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxCategoria"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asignación actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Eliminar una asignación de artículo",
+                "operationId": "16d353433ce9b265bf781d35bf69eaf9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Asignación eliminada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxcategoria/eliminados": {
+            "get": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Obtener todas las asignaciones de artículos a categorías eliminados",
+                "operationId": "337a3830bb28a78f958ece41816528c1",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ArticuloxCategoria"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/articuloxcategoria/restore/{id}": {
+            "put": {
+                "tags": [
+                    "ArticuloxCategoria"
+                ],
+                "summary": "Restaurar una asignación de artículo eliminada",
+                "operationId": "71157730289ff4eaf3c465994cd1b07a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación restaurada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxfoto": {
+            "get": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Obtener todas las asignaciones de artículos a fotos",
+                "operationId": "d6be24e45a89f07fef7ff982bfbf3b6e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ArticuloxFoto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Asignar una foto a un artículo",
+                "operationId": "945cc4786e4fe74e1126e53182ead4ed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxFoto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asignación creada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxfoto/{id}": {
+            "get": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Obtener una asignación por ID",
+                "operationId": "661e84f082395748110ba1e454c1b911",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticuloxFoto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Actualizar una asignación",
+                "operationId": "f598079eee4ac0c85e9da523a0227b5a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxFoto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asignación actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Eliminar una asignación",
+                "operationId": "0bbcefabbf40171847135ce4dbb4ce3d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Asignación eliminada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxfoto/eliminados": {
+            "get": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Obtener asignaciones eliminadas",
+                "operationId": "29e95518accb203c04de448cd45c662e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones eliminadas"
+                    }
+                }
+            }
+        },
+        "/api/articuloxfoto/restore/{id}": {
+            "put": {
+                "tags": [
+                    "ArticuloxFoto"
+                ],
+                "summary": "Restaurar una asignación eliminada",
+                "operationId": "31c9847ca7db43b4a753a7d6198b3af4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación restaurada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxproveedor": {
+            "get": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Obtener todas las asignaciones de artículos a proveedores",
+                "operationId": "518cfc2011f6ae7df44f0366a69c1dcb",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ArticuloxProveedor"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Asignar un artículo a un proveedor",
+                "operationId": "13325289ced25d8ec6c9efb172176994",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxProveedor"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asignación creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/articuloxproveedor/{id}": {
+            "get": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Obtener una asignación por ID",
+                "operationId": "7a73a268a808248a865d2ea6a73de7cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de la asignación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArticuloxProveedor"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Actualizar una asignación",
+                "operationId": "69dff976c9c18b36779f4f045451beb5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArticuloxProveedor"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asignación actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Eliminar una asignación",
+                "operationId": "a6e4534809ca63c3342a6a2e54cbc96e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Asignación eliminada"
+                    }
+                }
+            }
+        },
+        "/api/articuloxproveedor/eliminados": {
+            "get": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Obtener todas las asignaciones eliminados",
+                "operationId": "e0a9f5a0a5d83a2f03909adb00572556",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ArticuloxProveedor"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/articuloxproveedor/restore/{id}": {
+            "put": {
+                "tags": [
+                    "ArticuloxProveedor"
+                ],
+                "summary": "Restaurar una asignación eliminada",
+                "operationId": "974c77a2aa0c582a5a652fe69b35d8f2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación restaurada"
+                    }
+                }
+            }
+        },
+        "/api/categorias": {
+            "get": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Obtener todas las categorías",
+                "operationId": "66bfb3e0bf7747700be142ec5329dfae",
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Categoria"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Crear una nueva categoría",
+                "operationId": "acace4e67a5f9bbaa41b456c95b2bd05",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Categoria"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Categoría creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/categorias/{id}": {
+            "get": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Obtener una categoría por ID",
+                "operationId": "af067e125b5f9a1b1306d9e5c2a5867e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la categoría",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Categoria"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Actualizar una categoría",
+                "operationId": "3465ccc7d2520d34b4c457d4158ae6ac",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Categoria"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Eliminar una categoría",
+                "operationId": "a37893cb60d6b5ca9b1d6d23dbe83041",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Categoría eliminada"
+                    }
+                }
+            }
+        },
+        "/api/categorias/eliminadas": {
+            "get": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Obtener categorías eliminadas",
+                "operationId": "a611ee622465fdb471b9fd6aa117e2e5",
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías eliminadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Categoria"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/categorias/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Categoria"
+                ],
+                "summary": "Restaurar una categoría eliminada",
+                "operationId": "2c3cca3dc95c015b34cccf41f1127767",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categoría restaurada"
+                    }
+                }
+            }
+        },
+        "/api/inventarios": {
+            "get": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Obtener todos los inventarios",
+                "operationId": "721655bcda437b9623a493da77e2fd43",
+                "responses": {
+                    "200": {
+                        "description": "Lista de inventarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Inventario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Crear un nuevo inventario",
+                "operationId": "e2544a669fb3cce9342d9cf42dfbf205",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Inventario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Inventario creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/inventarios/{id}": {
+            "get": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Obtener un inventario por ID",
+                "operationId": "61ca5382ad56e1c47831198872094a4a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del inventario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del inventario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Inventario"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Actualizar un inventario",
+                "operationId": "dd96c5e900591f5e268aa18a8320e524",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del inventario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Inventario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inventario actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Eliminar un inventario",
+                "operationId": "72192e1c345bc6be025c87d0b8b860d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del inventario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Inventario eliminado"
+                    }
+                }
+            }
+        },
+        "/api/inventarios/eliminados": {
+            "get": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Obtener inventarios eliminados",
+                "operationId": "b20cdbb5ac720c11ee79c03d192c6030",
+                "responses": {
+                    "200": {
+                        "description": "Lista de inventarios eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Inventario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/inventarios/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Restaurar un inventario eliminado",
+                "operationId": "d395dac2b6ab40c5ba3b4739a1cdda3d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del inventario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inventario restaurado"
+                    }
+                }
+            }
+        },
+        "/api/movimientosinventario": {
+            "get": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Obtener todos los movimientos de inventario",
+                "operationId": "91d2de076c38020883cbc332e247e10c",
+                "responses": {
+                    "200": {
+                        "description": "Lista de movimientos de inventario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MovimientoInventario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Crear un nuevo movimiento de inventario",
+                "operationId": "d67e4664447da3a718490ce2c0a64446",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MovimientoInventario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Movimiento de inventario creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/movimientosinventario/{id}": {
+            "get": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Obtener un movimiento de inventario por ID",
+                "operationId": "99627206f329f9280fa6aeca95d6e8e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del movimiento de inventario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimientoInventario"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Actualizar un movimiento de inventario por ID",
+                "operationId": "54b842e9c8e7942733c2d00de04765af",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MovimientoInventario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Movimiento de inventario actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimientoInventario"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Eliminar un movimiento de inventario por ID",
+                "operationId": "0596e80c63f993f1a4da922275fe2156",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Movimiento de inventario eliminado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/movimientosinventario/eliminados": {
+            "get": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Obtener todos los movimientos de inventario eliminados",
+                "operationId": "914c4048a64e18f23698d0c7aa46e538",
+                "responses": {
+                    "200": {
+                        "description": "Lista de movimientos de inventario eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MovimientoInventario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/movimientosinventario/restore/{id}": {
+            "put": {
+                "tags": [
+                    "MovimientoInventario"
+                ],
+                "summary": "Restaurar un movimiento de inventario eliminado por ID",
+                "operationId": "e4422db70b9ae040ef2938dbfcb3920c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movimiento de inventario restaurado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimientoInventario"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/permisos": {
+            "get": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Obtener todos los permisos",
+                "operationId": "8feceb78c9ff332ad552bb98ae0657d3",
+                "responses": {
+                    "200": {
+                        "description": "Lista de permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Permiso"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Crear un nuevo permiso",
+                "operationId": "f5312187af2d66fda3392fd3222089fb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Permiso"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Permiso creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/permisos/{id}": {
+            "get": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Obtener un permiso por ID",
+                "operationId": "36d51e43024849e1a739a7021da163ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del permiso",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del permiso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Permiso"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Actualizar un permiso",
+                "operationId": "bc6245339799a3f8a9a81e93faa293b6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del permiso",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Permiso"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permiso actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Eliminar un permiso",
+                "operationId": "1b8b8d685cca25f33209f68652f78fb8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del permiso",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Permiso eliminado"
+                    }
+                }
+            }
+        },
+        "/api/permisos/eliminados": {
+            "get": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Obtener permisos eliminados",
+                "operationId": "55ee6cd6433446cba91cd8c75791b844",
+                "responses": {
+                    "200": {
+                        "description": "Lista de permisos eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Permiso"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/permisos/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Permiso"
+                ],
+                "summary": "Restaurar un permiso eliminado",
+                "operationId": "e2228f12a6d71ba5d8a2ffa0b8f4b8a9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del permiso",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Permiso restaurado"
+                    }
+                }
+            }
+        },
+        "/api/personas": {
+            "get": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Obtener todas las personas",
+                "operationId": "8601618afc784c4736e52022f7f6f047",
+                "responses": {
+                    "200": {
+                        "description": "Lista de personas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Persona"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Crear una nueva persona",
+                "operationId": "d016dca10e1a596471fe5aa5d4c99841",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Persona"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Persona creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/personas/{id}": {
+            "get": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Obtener una persona por ID",
+                "operationId": "9b70ed1d108dd682ec86b7c48f328884",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la persona",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Persona"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Actualizar una persona",
+                "operationId": "2a6e07dc32d26f218b13c0a2dc442fdf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Persona"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Persona actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Eliminar una persona",
+                "operationId": "8564ed4ed7e2d07b09bda4aac6184710",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Persona eliminada"
+                    }
+                }
+            }
+        },
+        "/api/personas/eliminadas": {
+            "get": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Obtener personas eliminadas",
+                "operationId": "9faccd65528ce5f94a3c0982d8a4ca2a",
+                "responses": {
+                    "200": {
+                        "description": "Lista de personas eliminadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Persona"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/personas/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Persona"
+                ],
+                "summary": "Restaurar una persona eliminada",
+                "operationId": "70bbdfbb88734a4dc46d7381423aa956",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Persona restaurada"
+                    }
+                }
+            }
+        },
+        "/api/proveedores": {
+            "get": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Obtener todos los proveedores",
+                "operationId": "5eb7d790ae5c32c59bd58744f5ed3da5",
+                "responses": {
+                    "200": {
+                        "description": "Lista de proveedores",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Proveedor"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Crear un nuevo proveedor",
+                "operationId": "5c1bcfb0dbccf86c376dc7a47fdff311",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Proveedor"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Proveedor creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/proveedores/{id}": {
+            "get": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Obtener un proveedor por ID",
+                "operationId": "1898d8b0458ba55e2c8240363838a2a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del proveedor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Proveedor"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Actualizar un proveedor",
+                "operationId": "72364f0ee2e9c4041a2f38af705cea3b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Proveedor"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Proveedor actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Eliminar un proveedor",
+                "operationId": "8b7ae059b2d7afad943975d96233b0b7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Proveedor eliminado"
+                    }
+                }
+            }
+        },
+        "/api/proveedores/eliminados": {
+            "get": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Obtener todos los proveedores eliminados",
+                "operationId": "853377f4a07f5095fd8b548822026d59",
+                "responses": {
+                    "200": {
+                        "description": "Lista de proveedores eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Proveedor"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/proveedores/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Proveedor"
+                ],
+                "summary": "Restaurar un proveedor eliminado",
+                "operationId": "1e36c165c25fd4abfe41f44be0412c9f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proveedor restaurado"
+                    }
+                }
+            }
+        },
+        "/api/roles": {
+            "get": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Obtener todos los roles",
+                "operationId": "bf78d43aa8b5c576b78b08b73c404cb6",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Rol"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Crear un nuevo rol",
+                "operationId": "19029466a195a478441990551cb1e8c9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Rol"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/roles/{id}": {
+            "get": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Obtener un rol por ID",
+                "operationId": "bcca3423f39b15abd0d0214dd6169f3c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del rol",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Rol"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Actualizar un rol",
+                "operationId": "0444e2e7859bbaa81749d090c06415a1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Rol"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Eliminar un rol",
+                "operationId": "de55f66883ee7b0d98d50e5e82e94f7e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rol eliminado"
+                    }
+                }
+            }
+        },
+        "/api/roles/eliminados": {
+            "get": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Obtener roles eliminados",
+                "operationId": "b1bd72811276697257b8db663abb1bb2",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Rol"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/roles/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Rol"
+                ],
+                "summary": "Restaurar un rol eliminado",
+                "operationId": "c5c7364d27ea812ebfbb2a5070901391",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol restaurado"
+                    }
+                }
+            }
+        },
+        "/api/rolxpermiso": {
+            "get": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Obtener todas las relaciones entre roles y permisos",
+                "operationId": "00e7255899af841d16a319f1d275b0cd",
+                "responses": {
+                    "200": {
+                        "description": "Lista de relaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RolxPermiso"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Crear una nueva relación entre rol y permiso",
+                "operationId": "2daa02802f19fc990d4c85b90f11644e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolxPermiso"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Relación creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/rolxpermiso/{id}": {
+            "get": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Obtener una relación por ID",
+                "operationId": "ce45b8977280c81f932ee23a884621a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la relación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolxPermiso"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Actualizar una relación",
+                "operationId": "b1f9455f27622df999f4154ae2b3bee1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolxPermiso"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Relación actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Eliminar una relación",
+                "operationId": "572289dbeedef7139a947d1a2bb78bbc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Relación eliminada"
+                    }
+                }
+            }
+        },
+        "/api/rolxpermiso/eliminados": {
+            "get": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Obtener relaciones eliminadas",
+                "operationId": "7b2c61fc80d80ef1111dbfba56f36b8b",
+                "responses": {
+                    "200": {
+                        "description": "Lista de relaciones eliminadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RolxPermiso"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rolxpermiso/restore/{id}": {
+            "put": {
+                "tags": [
+                    "RolxPermiso"
+                ],
+                "summary": "Restaurar una relación eliminada",
+                "operationId": "0b23f47bbd6cc8f3888bf36a743117ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Relación restaurada"
+                    }
+                }
+            }
+        },
+        "/api/rolxpersona": {
+            "get": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Obtener todas las asignaciones de roles a personas",
+                "operationId": "53a7e02c60b927df60e64e15d6b892ac",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles asignados a personas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RolxPersona"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Asignar un nuevo rol a una persona",
+                "operationId": "5b2b3c678075d13278b04c5f996399ec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolxPersona"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol asignado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/rolxpersona/{id}": {
+            "get": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Obtener una asignación de rol por ID",
+                "operationId": "c955e56aed2100790609e7e74d374bec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la asignación de rol",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RolxPersona"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Actualizar una asignación de rol",
+                "operationId": "1a8195d16c12ef6ae71e44d2e1c351f8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolxPersona"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asignación actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Eliminar una asignación de rol",
+                "operationId": "1f5f6b34d7c9d11958102d4ac3704724",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Asignación eliminada"
+                    }
+                }
+            }
+        },
+        "/api/rolxpersona/eliminados": {
+            "get": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Obtener asignaciones eliminadas",
+                "operationId": "4c933ddc0e54ff3a887303d934af823d",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones eliminadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RolxPersona"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rolxpersona/restore/{id}": {
+            "put": {
+                "tags": [
+                    "RolxPersona"
+                ],
+                "summary": "Restaurar una asignación eliminada",
+                "operationId": "a5b80292f3ce765101c7e58ea8235b5b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación restaurada"
+                    }
+                }
+            }
+        },
+        "/api/usuarios": {
+            "get": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Obtener todos los usuarios",
+                "operationId": "e9d4d8b419dbef04b5748fbf9ccf3881",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Usuario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Crear un nuevo usuario",
+                "operationId": "4e9dbcbdaaaf9faab196a82d5cbaea23",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Usuario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario creado exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/usuarios/{id}": {
+            "get": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Obtener un usuario por ID",
+                "operationId": "e9ac05ddc4ea46d8848b012d7d92e3ac",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información del usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Actualizar un usuario",
+                "operationId": "27ac608b6dd8b8e7c7c45b10c5210b3e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Usuario"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Eliminar un usuario",
+                "operationId": "ea700764859a665afd38bb39c2842f1c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Usuario eliminado"
+                    }
+                }
+            }
+        },
+        "/api/usuarios/eliminados": {
+            "get": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Obtener usuarios eliminados",
+                "operationId": "6f8454f43ad57e21f7cc87549ed995d6",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Usuario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/usuarios/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Usuario"
+                ],
+                "summary": "Restaurar un usuario eliminado",
+                "operationId": "c6e9c297450620d3d3ba5f4482e93808",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario restaurado"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Articulo": {
+                "title": "Articulo",
+                "description": "Modelo de Artículo",
+                "required": [
+                    "ID_INVENTARIOS",
+                    "NOMBRE",
+                    "MARCA",
+                    "DESCRIPCION",
+                    "FECHACADUCIDAD",
+                    "UNIDAD",
+                    "CANTIDAD"
+                ],
+                "properties": {
+                    "ID_INVENTARIOS": {
+                        "description": "ID del inventario asociado",
+                        "type": "integer"
+                    },
+                    "NOMBRE": {
+                        "description": "Nombre del artículo",
+                        "type": "string"
+                    },
+                    "MARCA": {
+                        "description": "Marca del artículo",
+                        "type": "string"
+                    },
+                    "DESCRIPCION": {
+                        "description": "Descripción del artículo",
+                        "type": "string"
+                    },
+                    "FECHACADUCIDAD": {
+                        "description": "Fecha de caducidad del artículo",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "UNIDAD": {
+                        "description": "Unidad de medida del artículo",
+                        "type": "string"
+                    },
+                    "CANTIDAD": {
+                        "description": "Cantidad disponible del artículo",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ArticuloxCategoria": {
+                "title": "ArticuloxCategoria",
+                "description": "Modelo de Articulo por Categoria",
+                "required": [
+                    "ID_ARTICULOS",
+                    "ID_CATEGORIAS"
+                ],
+                "properties": {
+                    "ID_ARTICULOS": {
+                        "description": "ID del articulo asociado",
+                        "type": "integer"
+                    },
+                    "ID_CATEGORIAS": {
+                        "description": "ID de la categoria asociada",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ArticuloxFoto": {
+                "title": "ArticuloxFoto",
+                "description": "Modelo de Artículo por Foto",
+                "required": [
+                    "ID_ARTICULOS",
+                    "ID_FOTOS"
+                ],
+                "properties": {
+                    "ID_ARTICULOS": {
+                        "description": "ID del artículo asociado",
+                        "type": "integer"
+                    },
+                    "ID_FOTOS": {
+                        "description": "ID de la foto asociada",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ArticuloxProveedor": {
+                "title": "ArticuloxProveedor",
+                "description": "Modelo de Artículo por Proveedor",
+                "required": [
+                    "ID_ARTICULOS",
+                    "ID_PROVEEDORES"
+                ],
+                "properties": {
+                    "ID_ARTICULOS": {
+                        "description": "ID del artículo asociado",
+                        "type": "integer"
+                    },
+                    "ID_PROVEEDORES": {
+                        "description": "ID del proveedor asociado",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Categoria": {
+                "title": "Categoria",
+                "description": "Modelo de Categoria",
+                "required": [
+                    "NOMBRE"
+                ],
+                "properties": {
+                    "NOMBRE": {
+                        "description": "Nombre de la categoría",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Inventario": {
+                "title": "Inventario",
+                "description": "Modelo de Inventario",
+                "required": [
+                    "NOMBRE",
+                    "ID_FOTOS",
+                    "ID_USUARIOS"
+                ],
+                "properties": {
+                    "NOMBRE": {
+                        "description": "Nombre del inventario",
+                        "type": "string"
+                    },
+                    "ID_FOTOS": {
+                        "description": "ID de la foto asociada",
+                        "type": "integer"
+                    },
+                    "ID_USUARIOS": {
+                        "description": "ID del usuario propietario",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "MovimientoInventario": {
+                "title": "MovimientoInventario",
+                "description": "Modelo de Movimiento de Inventario",
+                "required": [
+                    "ID_ARTICULOS",
+                    "ID_INVENTARIOS",
+                    "TIPO",
+                    "CANTIDAD",
+                    "FECHA",
+                    "ID_USUARIOS"
+                ],
+                "properties": {
+                    "ID_ARTICULOS": {
+                        "description": "ID del artículo asociado",
+                        "type": "integer"
+                    },
+                    "ID_INVENTARIOS": {
+                        "description": "ID del inventario asociado",
+                        "type": "integer"
+                    },
+                    "TIPO": {
+                        "description": "Tipo de movimiento (entrada/salida)",
+                        "type": "string"
+                    },
+                    "CANTIDAD": {
+                        "description": "Cantidad de artículos movidos",
+                        "type": "integer"
+                    },
+                    "FECHA": {
+                        "description": "Fecha del movimiento",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "ID_USUARIOS": {
+                        "description": "ID del usuario que realizó el movimiento",
+                        "type": "integer"
+                    },
+                    "OBSERVACIONES": {
+                        "description": "Observaciones adicionales del movimiento",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Permiso": {
+                "title": "Permiso",
+                "description": "Modelo de Permiso",
+                "required": [
+                    "NOMBRE",
+                    "DESCRIPCION",
+                    "ESTADO"
+                ],
+                "properties": {
+                    "NOMBRE": {
+                        "description": "Nombre del permiso",
+                        "type": "string"
+                    },
+                    "DESCRIPCION": {
+                        "description": "Descripción del permiso",
+                        "type": "string"
+                    },
+                    "ESTADO": {
+                        "description": "Estado del permiso",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Persona": {
+                "title": "Persona",
+                "description": "Modelo de Persona",
+                "required": [
+                    "CEDULA",
+                    "NOMBRES",
+                    "APELLIDO",
+                    "TELEFONO",
+                    "CORREO"
+                ],
+                "properties": {
+                    "CEDULA": {
+                        "description": "Cédula de la persona",
+                        "type": "string"
+                    },
+                    "NOMBRES": {
+                        "description": "Nombres de la persona",
+                        "type": "string"
+                    },
+                    "APELLIDO": {
+                        "description": "Apellido de la persona",
+                        "type": "string"
+                    },
+                    "TELEFONO": {
+                        "description": "Teléfono de la persona",
+                        "type": "string"
+                    },
+                    "CORREO": {
+                        "description": "Correo de la persona",
+                        "type": "string",
+                        "format": "email"
+                    }
+                },
+                "type": "object"
+            },
+            "Proveedor": {
+                "title": "Proveedor",
+                "description": "Modelo de Proveedor",
+                "required": [
+                    "NOMBRE",
+                    "TELEFONO",
+                    "CORREO",
+                    "DIRECCION"
+                ],
+                "properties": {
+                    "NOMBRE": {
+                        "description": "Nombre del proveedor",
+                        "type": "string"
+                    },
+                    "TELEFONO": {
+                        "description": "Teléfono del proveedor",
+                        "type": "string"
+                    },
+                    "CORREO": {
+                        "description": "Correo del proveedor",
+                        "type": "string"
+                    },
+                    "DIRECCION": {
+                        "description": "Dirección del proveedor",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Rol": {
+                "title": "Rol",
+                "description": "Modelo de Rol",
+                "required": [
+                    "DESCRIPCION"
+                ],
+                "properties": {
+                    "DESCRIPCION": {
+                        "description": "Descripción del rol",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RolxPermiso": {
+                "title": "RolxPermiso",
+                "description": "Modelo de la relación entre roles y permisos",
+                "required": [
+                    "ID_ROLES",
+                    "ID_PERMISOS"
+                ],
+                "properties": {
+                    "ID_ROLES": {
+                        "description": "ID del rol",
+                        "type": "integer"
+                    },
+                    "ID_PERMISOS": {
+                        "description": "ID del permiso",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "RolxPersona": {
+                "title": "RolxPersona",
+                "description": "Modelo de Rol por Persona",
+                "required": [
+                    "ID_ROLES",
+                    "ID_PERSONAS"
+                ],
+                "properties": {
+                    "ID_ROLES": {
+                        "description": "ID del rol asociado",
+                        "type": "integer"
+                    },
+                    "ID_PERSONAS": {
+                        "description": "ID de la persona asociada",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Usuario": {
+                "title": "Usuario",
+                "description": "Modelo de Usuario",
+                "required": [
+                    "ID_PERSONAS",
+                    "LOGIN",
+                    "PASSWORD"
+                ],
+                "properties": {
+                    "ID_PERSONAS": {
+                        "description": "ID de la persona asociada",
+                        "type": "integer"
+                    },
+                    "LOGIN": {
+                        "description": "Login del usuario",
+                        "type": "string"
+                    },
+                    "PASSWORD": {
+                        "description": "Contraseña del usuario",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Articulo",
+            "description": "Articulo"
+        },
+        {
+            "name": "ArticuloxCategoria",
+            "description": "ArticuloxCategoria"
+        },
+        {
+            "name": "ArticuloxFoto",
+            "description": "ArticuloxFoto"
+        },
+        {
+            "name": "ArticuloxProveedor",
+            "description": "ArticuloxProveedor"
+        },
+        {
+            "name": "Categoria",
+            "description": "Categoria"
+        },
+        {
+            "name": "Inventario",
+            "description": "Inventario"
+        },
+        {
+            "name": "MovimientoInventario",
+            "description": "MovimientoInventario"
+        },
+        {
+            "name": "Permiso",
+            "description": "Permiso"
+        },
+        {
+            "name": "Persona",
+            "description": "Persona"
+        },
+        {
+            "name": "Proveedor",
+            "description": "Proveedor"
+        },
+        {
+            "name": "Rol",
+            "description": "Rol"
+        },
+        {
+            "name": "RolxPermiso",
+            "description": "RolxPermiso"
+        },
+        {
+            "name": "RolxPersona",
+            "description": "RolxPersona"
+        },
+        {
+            "name": "Usuario",
+            "description": "Usuario"
+        }
+    ]
+}

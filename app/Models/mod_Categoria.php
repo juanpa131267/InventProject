@@ -10,6 +10,7 @@ class mod_Categoria extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const DELETED_AT = 'DELETED_AT';
     protected $table = 'CATEGORIAS';
     protected $fillable = ['NOMBRE'];
     protected $dates = ['DELETED_AT'];
