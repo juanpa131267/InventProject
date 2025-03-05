@@ -5,196 +5,125 @@ namespace App\Http\Controllers;
 use App\Models\mod_Categoria;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Validator;
-
-/**
- * @OA\Schema(
- *     schema="Categoria",
- *     type="object",
- *     title="Categoria",
- *     description="Modelo de Categoria",
- *     required={"NOMBRE"},
- *     @OA\Property(property="NOMBRE", type="string", description="Nombre de la categoría")
- * )
- */
 
 class CategoriaController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/categorias",
-     *     summary="Obtener todas las categorías",
-     *     tags={"Categoria"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de categorías",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Categoria"))
-     *     )
-     * )
-     */
-    public function index()
+    // Mostrar la lista de categorías
+    public function index(Request $request)
     {
-        return response()->json(mod_Categoria::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+        
+        try {
+            $query = mod_Categoria::query();
+            if (!empty($search)) {
+                $query->where('NOMBRE', 'like', "%{$search}%");
+            }
+            
+            $categorias = $query->paginate(15);
+            return response()->json($categorias, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener categorías'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/categorias",
-     *     summary="Crear una nueva categoría",
-     *     tags={"Categoria"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Categoria")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Categoría creada exitosamente"
-     *     )
-     * )
-     */
+    // Mostrar la vista de creación
+    public function create()
+    {
+        return view('VistasCrud.VistasCategoria.create');
+    }
+
+    // Almacenar una nueva categoría
     public function store(Request $request)
     {
         $request->validate([
-            'NOMBRE' => 'required|string|max:255|unique:CATEGORIAS,NOMBRE'
+            'NOMBRE' => 'required|string|max:255|unique:CATEGORIAS,NOMBRE',
         ]);
 
-        $categoria = mod_Categoria::create($request->all());
-        return response()->json($categoria, Response::HTTP_CREATED);
+        try {
+            mod_Categoria::create($request->all());
+            return redirect()->route('categorias.index')->with('success', 'Categoría creada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('categorias.index')->with('error', 'No se pudo crear la categoría.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/categorias/{id}",
-     *     summary="Obtener una categoría por ID",
-     *     tags={"Categoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la categoría",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información de la categoría",
-     *         @OA\JsonContent(ref="#/components/schemas/Categoria")
-     *     )
-     * )
-     */
+    // Mostrar una categoría específica
     public function show($id)
     {
-        $categoria = mod_Categoria::find($id);
-        if (!$categoria) {
+        try {
+            $categoria = mod_Categoria::findOrFail($id);
+            return response()->json($categoria, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($categoria, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/categorias/{id}",
-     *     summary="Actualizar una categoría",
-     *     tags={"Categoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la categoría",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Categoria")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Categoría actualizada"
-     *     )
-     * )
-     */
+    // Mostrar la vista de edición
+    public function edit($id)
+    {
+        $categoria = mod_Categoria::findOrFail($id);
+        return view('VistasCrud.VistasCategoria.edit', compact('categoria'));
+    }
+
+    // Actualizar una categoría
     public function update(Request $request, $id)
     {
-        $categoria = mod_Categoria::find($id);
-        if (!$categoria) {
-            return response()->json(['error' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-
+        $categoria = mod_Categoria::findOrFail($id);
+        
         $request->validate([
-            'NOMBRE' => 'required|string|max:255|unique:CATEGORIAS,NOMBRE,' . $id . ',ID'
+            'NOMBRE' => "required|string|max:255|unique:CATEGORIAS,NOMBRE,$id,ID",
         ]);
 
-        $categoria->update($request->all());
-        return response()->json($categoria, Response::HTTP_OK);
+        try {
+            $categoria->update($request->only('NOMBRE'));
+            return redirect()->route('categorias.index')->with('success', 'Categoría actualizada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('categorias.index')->with('error', 'Error al actualizar la categoría.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/categorias/{id}",
-     *     summary="Eliminar una categoría",
-     *     tags={"Categoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la categoría",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Categoría eliminada"
-     *     )
-     * )
-     */
+    // Eliminar una categoría (lógica)
     public function destroy($id)
     {
         $categoria = mod_Categoria::find($id);
+
         if (!$categoria) {
             return response()->json(['error' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
         }
 
-        $categoria->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        try {
+            $categoria->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar la categoría'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/categorias/eliminadas",
-     *     summary="Obtener categorías eliminadas",
-     *     tags={"Categoria"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de categorías eliminadas",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Categoria"))
-     *     )
-     * )
-     */
+    // Mostrar categorías eliminadas
     public function deleted()
     {
-        return response()->json(mod_Categoria::onlyTrashed()->get(), Response::HTTP_OK);
+        $categoriasEliminadas = mod_Categoria::onlyTrashed()->get();
+        return view('VistasCrud.VistasCategoria.deleted', compact('categoriasEliminadas'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/categorias/restore/{id}",
-     *     summary="Restaurar una categoría eliminada",
-     *     tags={"Categoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la categoría",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Categoría restaurada"
-     *     )
-     * )
-     */
+    // Restaurar una categoría eliminada
     public function restore($id)
     {
         $categoria = mod_Categoria::withTrashed()->findOrFail($id);
         $categoria->restore();
-        return response()->json($categoria, Response::HTTP_OK);
+        return redirect()->route('categorias.deleted')->with('success', 'Categoría restaurada exitosamente.');
+    }
+
+    // Eliminar permanentemente una categoría
+    public function forceDelete($id)
+    {
+        $categoria = mod_Categoria::withTrashed()->findOrFail($id);
+        
+        try {
+            $categoria->forceDelete();
+            return redirect()->route('categorias.deleted')->with('success', 'Categoría eliminada permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->route('categorias.deleted')->with('error', 'Error al eliminar la categoría permanentemente.');
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\mod_Articulo;
+use App\Models\mod_Inventario;
+use App\Models\mod_Usuario;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,17 +24,18 @@ class mod_MovimientosInventario extends Model
     
     public function ARTICULOS()
     {
-        return $this->belongsTo(mod_Articulo::class, 'ID_ARTICULOS');
+        return $this->belongsTo(mod_Articulo::class, 'ID_ARTICULOS', 'ID');
     }
-
+    
     public function INVENTARIOS()
     {
-        return $this->belongsTo(mod_Inventario::class, 'ID_INVENTARIOS');
+        return $this->belongsTo(mod_Inventario::class, 'ID_INVENTARIOS', 'ID');
     }
-
+    
     public function USUARIOS()
     {
-        return $this->belongsTo(mod_Usuario::class, 'ID_USUARIOS');
+        return $this->belongsTo(mod_Usuario::class, 'ID_USUARIOS', 'ID');
     }
+    
 }
 

@@ -1,102 +1,116 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Gestión de Personas</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Gestión de Personas</h1>
 
-    {{-- Mostrar mensajes de éxito o error --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        {{-- Botones y búsqueda --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{{ route('personas.create') }}" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Crear Persona
+            </a>
+            <input type="text" id="search-persona" class="form-control w-50" placeholder="Buscar por cédula">
+            <a href="{{ route('personas.deleted') }}" class="btn btn-warning">
+                <i class="fas fa-trash"></i> Personas Eliminadas
+            </a>
         </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
+
+        {{-- Tabla de personas --}}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cédula</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="personas-table">
+                    {{-- Los datos se cargarán aquí dinámicamente con AJAX --}}
+                </tbody>
+            </table>
         </div>
-    @endif
 
-    {{-- Botones para crear nueva persona y buscar --}}
-    <div class="mb-4">
-        <a href="{{ route('personas.create') }}" class="btn btn-success">Crear Persona</a>
-
-        {{-- Formulario para buscar persona por cédula usando AJAX --}}
-        <input type="text" id="search-cedula" class="form-control d-inline-block w-50" placeholder="Buscar por cédula" aria-label="Buscar por cédula">
-        
-        {{-- Botón para mostrar usuarios eliminados --}}
-        <a href="{{ route('personas.deleted') }}" class="btn btn-warning d-inline-block">Usuarios Eliminados</a>
+        {{-- Paginación --}}
+        <div id="pagination" class="d-flex justify-content-center"></div>
     </div>
-
-    {{-- Tabla de personas --}}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Cédula</th>
-                <th>Nombres</th>
-                <th>Apellidos</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Municipio (ID)</th> <!-- Nueva columna para Municipio -->
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="personas-table">
-            {{-- Aquí se cargarán los datos dinámicamente con AJAX --}}
-        </tbody>
-    </table>
 </div>
 
 <script>
-    // Cargar todas las personas al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-        fetchPersonas();
+        fetchPersonas(); // Cargar todas las personas al iniciar
     });
 
-    // Función para hacer la búsqueda de personas por AJAX
-    document.getElementById('search-cedula').addEventListener('input', function() {
-        let cedula = this.value; // Obtener el valor del campo de búsqueda
-        fetchPersonas(cedula); // Llama la función con el valor de la cédula
+    document.getElementById('search-persona').addEventListener('input', function() {
+        let searchTerm = this.value.trim();
+        fetchPersonas(searchTerm);
     });
 
-    // Función para hacer la petición AJAX
-    function fetchPersonas(cedula = '') {
-        let url = cedula ? `/api/personas?q=${cedula}` : '/api/personas';
-        fetch(url)
+    function fetchPersonas(search = '', page = 1) {
+        let url = `/api/personas?q=${encodeURIComponent(search)}&page=${page}`;
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
         .then(response => response.json())
         .then(data => {
             let tableBody = document.getElementById('personas-table');
-            tableBody.innerHTML = ''; // Limpia la tabla antes de agregar nuevos datos
+            tableBody.innerHTML = '';
 
-            if (data.length > 0) {
-                data.forEach(persona => {
-                    let municipioInfo = persona.municipio ? `${persona.municipio.municipio} (${persona.municipio.municipio_id})` : 'No asignado';
-                    
-                    let row = `
-                        <tr data-id="${persona.id}">
-                            <td>${persona.cedula}</td>
-                            <td>${persona.nombres}</td>
-                            <td>${persona.apellido}</td>
-                            <td>${persona.telefono}</td>
-                            <td>${persona.correo}</td>
-                            <td>${municipioInfo}</td>
-                            <td>
-                                <a href="/personas/${persona.id}/edit" class="btn btn-primary btn-sm">Editar</a>
-                                <button class="btn btn-danger btn-sm delete-btn" data-id="${persona.id}">Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
+            if (data.data.length > 0) {
+                data.data.forEach(persona => {
+                    let row = `<tr>
+                        <td>${persona.ID}</td>
+                        <td>${persona.CEDULA}</td>
+                        <td>${persona.NOMBRES}</td>
+                        <td>${persona.APELLIDO}</td>
+                        <td>${persona.TELEFONO}</td>
+                        <td>${persona.CORREO}</td>
+                        <td>
+                            <a href="/personas/${persona.ID}/edit" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="${persona.ID}">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>`;
                     tableBody.innerHTML += row;
                 });
             } else {
-                tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron personas.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron personas con esa cédula.</td></tr>';
             }
+            renderPagination(data, 'fetchPersonas', 'search-persona');
         })
-        .catch(error => {
-            console.error('Error al buscar personas:', error);
-        });
+        .catch(error => console.error('Error al obtener personas:', error));
     }
 
-
-    // Evento para manejar la eliminación de una persona
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('delete-btn')) {
             const id = event.target.getAttribute('data-id');
@@ -106,25 +120,22 @@
         }
     });
 
-    // Función para eliminar una persona
     function deletePersona(id) {
         fetch(`/personas/${id}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}', // Asegúrate de que el token CSRF esté presente
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json',
             },
         })
         .then(response => {
             if (response.ok) {
-                fetchPersonas(); // Refresca la lista de personas
+                fetchPersonas();
             } else {
                 console.error('Error al eliminar persona');
             }
         })
-        .catch(error => {
-            console.error('Error al eliminar persona:', error);
-        });
+        .catch(error => console.error('Error al eliminar persona:', error));
     }
 </script>
 @endsection

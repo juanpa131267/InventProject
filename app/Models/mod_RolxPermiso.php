@@ -22,11 +22,12 @@ class mod_RolxPermiso extends Model
 
     public function ROLES()
     {
-        return $this->belongsTo(mod_Rol::class, 'ID_ROLES');
+        return $this->belongsTo(mod_Rol::class, 'ID_ROLES', 'ID');
     }
 
     public function PERMISOS()
     {
-        return $this->belongsTo(mod_Permiso::class, 'ID_PERMISOS');
+        return $this->belongsTo(mod_Permiso::class, 'ID_PERMISOS', 'ID');
     }
 }
+

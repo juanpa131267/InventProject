@@ -13,16 +13,21 @@ class mod_Permiso extends Model
 
     const DELETED_AT = 'DELETED_AT';
     protected $table = 'PERMISOS';
-    protected $fillable = ['NOMBRE', 'DESCRIPCION', 'ESTADO'];
+    protected $fillable = ['NOMBRE', 'DESCRIPCION'];
     protected $primaryKey = 'ID';
     public $timestamps = false;
     public $incrementing = false;
 
     public function ROLES()
     {
-        return $this->belongsToMany(mod_Rol::class, 'ROLXPERMISO', 'PERMISO_ID', 'PERMISO_ID');
+        return $this->belongsToMany(mod_Rol::class, 'ROLXPERMISO', 'ID_PERMISOS', 'ID_ROLES');
     }
     
+    public function ROLXPERMISO()
+    {
+        return $this->hasMany(mod_RolxPermiso::class, 'ID_PERMISO', 'ID');
+    }
+
 }
 
 

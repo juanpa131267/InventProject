@@ -4,213 +4,144 @@ namespace App\Http\Controllers;
 
 use App\Models\mod_Persona;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Info(
- *    title="API de Personas",
- *    version="1.0.0",
- *    description="API de Personas",
- * )
- */
-
-/**
- * @OA\Schema(
- *     schema="Persona",
- *     type="object",
- *     title="Persona",
- *     description="Modelo de Persona",
- *     required={"CEDULA", "NOMBRES", "APELLIDO", "TELEFONO", "CORREO"},
- *     @OA\Property(property="CEDULA", type="string", description="Cédula de la persona"),
- *     @OA\Property(property="NOMBRES", type="string", description="Nombres de la persona"),
- *     @OA\Property(property="APELLIDO", type="string", description="Apellido de la persona"),
- *     @OA\Property(property="TELEFONO", type="string", description="Teléfono de la persona"),
- *     @OA\Property(property="CORREO", type="string", format="email", description="Correo de la persona")
- * )
- */
+use Symfony\Component\HttpFoundation\Response;
 
 class PersonaController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/personas",
-     *     summary="Obtener todas las personas",
-     *     tags={"Persona"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de personas",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Persona"))
-     *     )
-     * )
-     */
-    public function index()
+    // Mostrar la lista de personas
+    public function index(Request $request)
     {
-        return response()->json(mod_Persona::all(), 200);
+        $search = $request->query('q'); // Capturar el parámetro de búsqueda
+    
+        try {
+            $query = mod_Persona::query(); // Iniciar la consulta
+    
+            if (!empty($search)) { // Asegurar que la búsqueda no esté vacía
+                $query->where('CEDULA', 'like', "%{$search}%");
+            }
+    
+            $personas = $query->paginate(15); // Aplicar paginación correctamente
+    
+            return response()->json($personas, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener personas'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
+    
+    // Mostrar la vista de creación 
+    public function create()
+    {
+        return view('VistasCrud.VistasPersona.create');
+    }
+    
 
-    /**
-     * @OA\Post(
-     *     path="/api/personas",
-     *     summary="Crear una nueva persona",
-     *     tags={"Persona"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Persona")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Persona creada exitosamente"
-     *     )
-     * )
-     */
+    // Almacenar una nueva persona
     public function store(Request $request)
     {
-        $request->validate([
-            'CEDULA' => 'required|string|max:255|unique:PERSONAS,CEDULA',
+        $validatedData = $request->validate([
+            'CEDULA' => 'required|string|max:20|unique:PERSONAS,CEDULA',
             'NOMBRES' => 'required|string|max:255',
             'APELLIDO' => 'required|string|max:255',
             'TELEFONO' => 'required|string|max:15',
-            'CORREO' => 'required|email|max:255'
+            'CORREO' => 'required|email|max:255|unique:PERSONAS,CORREO',
         ]);
-
-        $persona = mod_Persona::create($request->all());
-        return response()->json($persona, 201);
+    
+        try {
+            mod_Persona::create($validatedData);
+            return redirect(url('/personas-index'))->with('success', 'Persona creada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/personas-index'))->with('error', 'No se pudo crear la persona. Intente nuevamente.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/personas/{id}",
-     *     summary="Obtener una persona por ID",
-     *     tags={"Persona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información de la persona",
-     *         @OA\JsonContent(ref="#/components/schemas/Persona")
-     *     )
-     * )
-     */
+    // Mostrar una persona específica
     public function show($id)
     {
-        $persona = mod_Persona::find($id);
-        if (!$persona) {
+        try {
+            $persona = mod_Persona::findOrFail($id);
+            return response()->json($persona, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Persona no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($persona, 200);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/personas/{id}",
-     *     summary="Actualizar una persona",
-     *     tags={"Persona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Persona")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Persona actualizada"
-     *     )
-     * )
-     */
-    public function update(Request $request, $id)
-    {
-        $persona = mod_Persona::find($id);
-        if (!$persona) {
-            return response()->json(['error' => 'Persona no encontrada'], Response::HTTP_NOT_FOUND);
-        }
+    // Mostrar la vista de edición de una persona
 
+    public function edit($id)
+    {
+        $persona = mod_Persona::findOrFail($id);
+        return view('VistasCrud.VistasPersona.edit', compact('persona'));
+    }
+    
+    // Validar los datos de la persona 
+    private function validatePersona(Request $request, $id = null)
+    {
+        $uniqueCedulaRule = $id ? "unique:PERSONAS,CEDULA,$id,ID" : 'unique:PERSONAS,CEDULA';
+        
         $request->validate([
-            'CEDULA' => 'required|string|max:255|unique:PERSONAS,CEDULA,' . $id . ',ID',
+            'CEDULA' => "required|string|max:255|$uniqueCedulaRule",
             'NOMBRES' => 'required|string|max:255',
             'APELLIDO' => 'required|string|max:255',
             'TELEFONO' => 'required|string|max:15',
-            'CORREO' => 'required|email|max:255'
+            'CORREO' => 'required|email|max:255',
         ]);
-
-        $persona->update($request->all());
-        return response()->json($persona, 200);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/personas/{id}",
-     *     summary="Eliminar una persona",
-     *     tags={"Persona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Persona eliminada"
-     *     )
-     * )
-     */
+    // Actualizar una persona existente
+    public function update(Request $request, $id)
+    {
+        $persona = mod_Persona::findOrFail($id);
+        
+    
+        $this->validatePersona($request, $id);
+    
+        try {
+            $persona->update([
+                'NOMBRES' => $request->NOMBRES,
+                'APELLIDO' => $request->APELLIDO,
+                'TELEFONO' => $request->TELEFONO,
+                'CORREO' => $request->CORREO,
+            ]);
+    
+            return redirect(url('/personas-index'))->with('success', 'Persona actualizada exitosamente');
+        } catch (\Exception $e) {
+            return redirect(url('/personas-index'))->with('error', 'Error al actualizar persona');
+        }
+    }
+    
+    // Eliminar una persona (lógica)
     public function destroy($id)
     {
         $persona = mod_Persona::find($id);
+    
         if (!$persona) {
             return response()->json(['error' => 'Persona no encontrada'], Response::HTTP_NOT_FOUND);
         }
-
-        $persona->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+    
+        try {
+            $persona->delete(); // Eliminar lógicamente
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar persona'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/personas/eliminadas",
-     *     summary="Obtener personas eliminadas",
-     *     tags={"Persona"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de personas eliminadas",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Persona"))
-     *     )
-     * )
-     */
+    // Mostrar personas eliminadas
     public function deleted()
     {
-        return response()->json(mod_Persona::onlyTrashed()->get(), 200);
+        $personasEliminadas = mod_Persona::onlyTrashed()->get();
+        return view('VistasCrud.VistasPersona.deleted', compact('personasEliminadas'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/personas/restore/{id}",
-     *     summary="Restaurar una persona eliminada",
-     *     tags={"Persona"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Persona restaurada"
-     *     )
-     * )
-     */
+    // Restaurar una persona eliminada
     public function restore($id)
     {
         $persona = mod_Persona::withTrashed()->findOrFail($id);
         $persona->restore();
-        return response()->json($persona, 200);
+
+        return redirect()->route('personas.deleted')->with('success', 'Persona restaurada exitosamente.');
+
     }
+
+
 }

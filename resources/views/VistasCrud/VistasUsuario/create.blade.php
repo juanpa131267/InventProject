@@ -1,77 +1,115 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Crear Usuario</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Crear Usuario</h1>
 
-    <form action="{{ route('usuarios.store') }}" method="POST">
-        @csrf
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-        <div class="form-group mb-3">
-            <label for="persona_id">Persona (ID)</label>
-            <select name="persona_id" id="persona_id" class="form-control" required>
-                @foreach($personas as $persona)
-                    <option value="{{ $persona->id }}">
-                        {{ $persona->nombres }} {{ $persona->apellido }} ({{ $persona->id }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        <form action="{{ route('usuarios.store') }}" method="POST">
+            @csrf
 
+            {{-- Selección de la Persona asociada al Usuario --}}
+            <div class="form-group mb-3">
+                <label for="ID_PERSONAS" class="font-weight-bold">Persona</label>
+                <select name="ID_PERSONAS" id="ID_PERSONAS" class="form-control" required>
+                    <option value="">Seleccione una persona</option>
+                    @foreach($personas as $persona)
+                        <option value="{{ $persona->ID }}">
+                            {{ $persona->NOMBRES }} {{ $persona->APELLIDO }} - {{ $persona->CEDULA }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="login">Login</label>
-            <input type="text" name="login" id="login" class="form-control" value="{{ old('login') }}" required>
-        </div>
+            {{-- Campo para el Login del Usuario --}}
+            <div class="form-group mb-3">
+                <label for="LOGIN" class="font-weight-bold">Login</label>
+                <input type="text" name="LOGIN" id="LOGIN" class="form-control" required>
+            </div>
 
-        <!-- Campo para contraseña -->
-        <div class="form-group mb-3">
-            <label for="password">Contraseña</label>
-            <div class="input-group">
-                <input type="password" name="password" id="password" class="form-control" required>
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">
-                        Mostrar
-                    </button>
+            {{-- Campo para la Contraseña --}}
+            <div class="form-group mb-3">
+                <label for="PASSWORD" class="font-weight-bold">Contraseña</label>
+                <div class="input-group">
+                    <input type="password" name="PASSWORD" id="PASSWORD" class="form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword">Mostrar</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Campo para confirmar la contraseña -->
-        <div class="form-group mb-3">
-            <label for="password_confirmation">Confirmar Contraseña</label>
-            <div class="input-group">
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">
-                        Mostrar
-                    </button>
+            {{-- Campo para Confirmar la Contraseña --}}
+            <div class="form-group mb-3">
+                <label for="password_confirmation" class="font-weight-bold">Confirmar Contraseña</label>
+                <div class="input-group">
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">Mostrar</button>
+                    </div>
                 </div>
+                <small id="passwordError" class="text-danger" style="display: none;">Las contraseñas no coinciden.</small>
             </div>
-        </div>
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-success">Crear Usuario</button>
-            <a href="{{ url('/usuarios-index') }}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                    <i class="fas fa-user-plus"></i> Crear
+                </button>
+                <a href="{{ route('usuarios.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-    // Mostrar u ocultar contraseña principal
-    document.getElementById('togglePassword').addEventListener('click', function() {
-        let passwordInput = document.getElementById('password');
-        let type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const password = document.getElementById('PASSWORD');
+        const confirmPassword = document.getElementById('password_confirmation');
+        const passwordError = document.getElementById('passwordError');
+        const submitBtn = document.getElementById('submitBtn');
 
-    // Mostrar u ocultar confirmación de contraseña
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-        let confirmPasswordInput = document.getElementById('password_confirmation');
-        let type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        confirmPasswordInput.setAttribute('type', type);
-        this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        function validatePasswords() {
+            if (password.value !== confirmPassword.value) {
+                passwordError.style.display = 'block';
+                submitBtn.disabled = true;
+            } else {
+                passwordError.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        password.addEventListener('input', validatePasswords);
+        confirmPassword.addEventListener('input', validatePasswords);
+
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const type = password.type === 'password' ? 'text' : 'password';
+            password.type = type;
+            this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const type = confirmPassword.type === 'password' ? 'text' : 'password';
+            confirmPassword.type = type;
+            this.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+        });
     });
 </script>
 @endsection

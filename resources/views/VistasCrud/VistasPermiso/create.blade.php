@@ -1,38 +1,49 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Crear Nuevo Permiso</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Crear Permiso</h1>
 
-    {{-- Mostrar mensajes de error --}}
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-    {{-- Formulario para crear un nuevo permiso --}}
-    <form action="{{ route('permisos.store') }}" method="POST">
-        @csrf {{-- Token de seguridad para el formulario --}}
+        <form action="{{ route('permisos.store') }}" method="POST">
+            @csrf
+            <div class="form-group mb-3">
+                <label for="NOMBRE" class="fw-bold">Nombre del Permiso</label>
+                <input type="text" name="NOMBRE" id="NOMBRE" class="form-control" placeholder="Ej. Administrar usuarios" required>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="nombre">Nombre del Permiso:</label>
-            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre') }}" placeholder="Introduce el nombre del permiso" required>
-        </div>
+            <div class="form-group mb-3">
+                <label for="DESCRIPCION" class="fw-bold">Descripción</label>
+                <textarea name="DESCRIPCION" id="DESCRIPCION" class="form-control" rows="3" placeholder="Breve descripción del permiso" required></textarea>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="descripcion">Descripción:</label>
-            <textarea name="descripcion" id="descripcion" class="form-control" placeholder="Introduce una descripción opcional">{{ old('descripcion') }}</textarea>
-        </div>
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-success">Crear Permiso</button>
-            <a href="{{ url('/permisos-index') }}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="fas fa-check"></i> Crear
+                </button>
+                <a href="{{ route('permisos.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

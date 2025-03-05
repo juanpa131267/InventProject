@@ -1,147 +1,63 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Editar Persona</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Editar Persona</h2>
 
-    {{-- Mostrar mensajes de éxito o error --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-    <form action="{{ route('personas.update', $persona->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+        <form id="personaForm" action="{{ route('personas.update', $persona->ID) }}" method="POST" class="needs-validation" novalidate>
+            @csrf
+            @method('PUT')
 
-        <div class="form-group mb-3">
-            <label for="cedula">Cédula</label>
-            <input type="text" name="cedula" id="cedula" class="form-control" value="{{ $persona->cedula }}" required>
-        </div>
+            <div class="mb-3">
+                <label for="cedula" class="form-label fw-bold">Cédula</label>
+                <input type="text" class="form-control" id="cedula" name="CEDULA" value="{{ $persona->CEDULA }}" readonly>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="nombre" class="form-label fw-bold">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="NOMBRES" value="{{ old('NOMBRES', $persona->NOMBRES) }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido" class="form-label fw-bold">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="APELLIDO" value="{{ old('APELLIDO', $persona->APELLIDO) }}" required>
+                </div>
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="nombres">Nombres</label>
-            <input type="text" name="nombres" id="nombres" class="form-control" value="{{ $persona->nombres }}" required>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="apellido">Apellido</label>
-            <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $persona->apellido }}" required>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="telefono">Teléfono</label>
-            <input type="text" name="telefono" id="telefono" class="form-control" value="{{ $persona->telefono }}" required>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="correo">Correo</label>
-            <input type="email" name="correo" id="correo" class="form-control" value="{{ $persona->correo }}" required>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="departamento">Departamento</label>
-            <select id="departamento" name="departamento_id" class="form-control">
-                <option value="">Seleccione un departamento</option>
-                @foreach($departamentos as $departamento)
-                    <option value="{{ $departamento->departamento_id }}" 
-                        {{ $persona->municipio->departamento_id == $departamento->departamento_id ? 'selected' : '' }}>
-                        {{ $departamento->departamento }} ({{ $departamento->departamento_id }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="municipio">Municipio</label>
-            <select id="municipio" name="municipio_id" class="form-control">
-                <option value="">Seleccione un municipio</option>
-                @foreach($municipios as $municipio)
-                    <option value="{{ $municipio->municipio_id }}" 
-                        {{ $persona->municipio_id == $municipio->municipio_id ? 'selected' : '' }}>
-                        {{ $municipio->municipio }} ({{ $municipio->municipio_id }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="{{ url('/personas-index') }}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" name="TELEFONO" value="{{ old('TELEFONO', $persona->TELEFONO) }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" name="CORREO" value="{{ old('CORREO', $persona->CORREO) }}" required>
+                </div>
+            </div>
+            
+            <div class="mt-4 d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Cambios</button>
+                <a href="{{ url('/personas-index') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancelar</a>
+            </div>
+        </form>
+    </div>
 </div>
-
-<script>
-    // Si se cambia el departamento, actualizar los municipios correspondientes
-    document.getElementById('departamento').addEventListener('change', function() {
-        let departamentoId = this.value;
-
-        if (departamentoId) {
-            fetch(`/api/departamentos/${departamentoId}/municipios`)
-                .then(response => response.json())
-                .then(data => {
-                    let municipioSelect = document.getElementById('municipio');
-                    municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-
-                    if (data.length > 0) {
-                        data.forEach(municipio => {
-                            let option = document.createElement('option');
-                            option.value = municipio.municipio_id;
-                            option.textContent = municipio.municipio;
-                            municipioSelect.appendChild(option);
-                        });
-                    }
-
-                    municipioSelect.disabled = false;
-
-                    // Si el municipio de la persona editada no está en la lista, lo seleccionamos
-                    let selectedMunicipioId = {{ json_encode($persona->municipio_id) }};
-                    if (selectedMunicipioId) {
-                        municipioSelect.value = selectedMunicipioId; // Establece el municipio seleccionado
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching municipios:', error);
-                });
-        } else {
-            document.getElementById('municipio').innerHTML = '<option value="">Seleccione un municipio</option>';
-            document.getElementById('municipio').disabled = true;
-        }
-    });
-
-    //Al crgar la página mostrar el departamento y municipio de la persona
-    document.addEventListener('DOMContentLoaded', function() {
-    let departamentoId = document.getElementById('departamento').value;
-    let municipioSelect = document.getElementById('municipio');
-    let selectedMunicipioId = {{ json_encode($persona->municipio_id) }};
-
-    if (departamentoId) {
-        fetch(`/api/departamentos/${departamentoId}/municipios`)
-            .then(response => response.json())
-            .then(data => {
-                municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-
-                data.forEach(municipio => {
-                    let option = document.createElement('option');
-                    option.value = municipio.municipio_id;
-                    option.textContent = municipio.municipio + ` (${municipio.municipio_id})`;
-                    municipioSelect.appendChild(option);
-                });
-
-                // Establecer el municipio seleccionado
-                municipioSelect.value = selectedMunicipioId;
-            })
-            .catch(error => {
-                console.error('Error fetching municipios:', error);
-            });
-    }
-});
-</script>
-
 @endsection

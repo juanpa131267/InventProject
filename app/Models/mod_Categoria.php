@@ -18,5 +18,10 @@ class mod_Categoria extends Model
     public $timestamps = false;
     public $incrementing = false;
 
+    public function ARTICULOXCATEGORIA()
+    {
+        return $this->hasMany(mod_ArticuloxCategoria::class, 'ID_CATEGORIAS', 'ID');
+    }
+
 }
 

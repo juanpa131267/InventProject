@@ -1,94 +1,110 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Gestión de Permisos</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Gestión de Permisos</h1>
 
-    {{-- Mostrar mensajes de éxito o error --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        {{-- Botones de acción --}}
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{{ route('permisos.create') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Crear Permiso
+            </a>
+            <input type="text" id="search-permiso" class="form-control w-50" placeholder="Buscar por nombre de permiso">
+            <a href="{{ route('permisos.deleted') }}" class="btn btn-warning">
+                <i class="fas fa-trash-alt"></i> Permisos Eliminados
+            </a>
         </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
+
+        {{-- Tabla de permisos --}}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="permisos-table">
+                    {{-- Datos cargados dinámicamente con AJAX --}}
+                </tbody>
+            </table>
         </div>
-    @endif
-
-    {{-- Botones para crear nuevo permiso y buscar --}}
-    <div class="mb-4">
-        <a href="{{ route('permisos.create') }}" class="btn btn-success">Crear Permiso</a>
-
-        {{-- Formulario para buscar permiso usando AJAX --}}
-        <input type="text" id="search-nombre" class="form-control d-inline-block w-50" placeholder="Buscar por nombre" aria-label="Buscar por nombre">
         
-        {{-- Botón para mostrar permisos eliminados --}}
-        <a href="{{ route('permisos.deleted') }}" class="btn btn-warning d-inline-block">Permisos Eliminados</a>
+        {{-- Paginación --}}
+        <div id="pagination" class="d-flex justify-content-center"></div>
     </div>
-
-    {{-- Tabla de permisos --}}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID Permiso</th> 
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="permisos-table">
-            {{-- Aquí se cargarán los datos dinámicamente con AJAX --}}
-        </tbody>
-    </table>
 </div>
 
 <script>
-    // Cargar todos los permisos al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         fetchPermisos();
     });
 
-    // Función para hacer la búsqueda de permisos por AJAX
-    document.getElementById('search-nombre').addEventListener('input', function() {
-        let nombre = this.value; // Obtener el valor del campo de búsqueda
-        fetchPermisos(nombre); // Llama la función con el valor del nombre
+    document.getElementById('search-permiso').addEventListener('input', function() {
+        fetchPermisos(this.value.trim());
     });
 
-    // Función para hacer la petición AJAX
-    function fetchPermisos(nombre = '') {
-        let url = nombre ? `/api/permisos?q=${nombre}` : '/api/permisos';
+    function fetchPermisos(search = '', page = 1) {
+        let url = `/api/permisos?q=${encodeURIComponent(search)}&page=${page}`;
 
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
         .then(response => response.json())
         .then(data => {
             let tableBody = document.getElementById('permisos-table');
-            tableBody.innerHTML = ''; // Limpia la tabla antes de agregar nuevos datos
+            tableBody.innerHTML = '';
 
-            if (data.length > 0) {
-                data.forEach(permiso => {
-                    let row = `
-                        <tr data-id="${permiso.id}">
-                            <td>${permiso.id}</td> {{-- Mostrar la ID del permiso --}}
-                            <td>${permiso.nombre}</td>
-                            <td>${permiso.descripcion}</td>
-                            <td>
-                                <a href="/permisos/${permiso.id}/edit" class="btn btn-primary btn-sm">Editar</a>
-                                <button class="btn btn-danger btn-sm delete-btn" data-id="${permiso.id}">Eliminar</button>
-                            </td>
-                        </tr>
+            if (data.data.length > 0) {
+                data.data.forEach(permiso => {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${permiso.ID}</td>
+                        <td>${permiso.NOMBRE}</td>
+                        <td>${permiso.DESCRIPCION}</td>
+                        <td>
+                            <a href="/permisos/${permiso.ID}/edit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${permiso.ID}">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </td>
                     `;
-                    tableBody.innerHTML += row;
+                    tableBody.appendChild(row);
                 });
             } else {
                 tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron permisos.</td></tr>';
             }
+            renderPagination(data, 'fetchPermisos', 'search-permiso');
         })
-        .catch(error => {
-            console.error('Error al buscar permisos:', error);
-        });
+        .catch(error => console.error('Error al obtener permisos:', error));
     }
 
-    // Evento para manejar la eliminación de un permiso
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('delete-btn')) {
             const id = event.target.getAttribute('data-id');
@@ -98,25 +114,22 @@
         }
     });
 
-    // Función para eliminar un permiso
     function deletePermiso(id) {
         fetch(`/permisos/${id}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}', // Asegúrate de que el token CSRF esté presente
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json',
             },
         })
         .then(response => {
             if (response.ok) {
-                fetchPermisos(); // Refresca la lista de permisos
+                fetchPermisos();
             } else {
                 console.error('Error al eliminar permiso');
             }
         })
-        .catch(error => {
-            console.error('Error al eliminar permiso:', error);
-        });
+        .catch(error => console.error('Error al eliminar permiso:', error));
     }
 </script>
 @endsection

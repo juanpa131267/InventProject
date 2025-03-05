@@ -1,66 +1,74 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Permisos Eliminados</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Permisos Eliminados</h1>
 
-    {{-- Notificaciones de éxito o error --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+        {{-- Notificaciones de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-    {{-- Tabla de permisos eliminados --}}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha de Eliminación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if($permisosEliminados->isEmpty())
-                <tr>
-                    <td colspan="5" class="text-center">No hay permisos eliminados.</td>
-                </tr>
-            @else
-                @foreach($permisosEliminados as $permiso)
+        {{-- Tabla de permisos eliminados --}}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="thead-dark">
                     <tr>
-                        <td>{{ $permiso->id }}</td>
-                        <td>{{ $permiso->nombre }}</td>
-                        <td>{{ $permiso->descripcion }}</td>
-                        <td>{{ $permiso->deleted_at }}</td>
-                        <td>
-                            {{-- Botón para restaurar --}}
-                            <form action="{{ route('permisos.restore', $permiso->id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                <button type="submit" class="btn btn-success btn-sm">Restaurar</button>
-                            </form>
-
-                            {{-- Botón para eliminar completamente --}}
-                            <form action="{{ route('permisos.forceDelete', $permiso->id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar este permiso permanentemente?')">Eliminar Completamente</button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Fecha de Eliminación</th>
+                        <th>Acciones</th>
                     </tr>
-                @endforeach
-            @endif
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                    @if($permisosEliminados->isEmpty())
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay permisos eliminados.</td>
+                        </tr>
+                    @else
+                        @foreach($permisosEliminados as $permiso)
+                            <tr>
+                                <td>{{ $permiso->ID }}</td>
+                                <td>{{ $permiso->NOMBRE }}</td>
+                                <td>{{ $permiso->DESCRIPCION }}</td>
+                                </td>
+                                <td>{{ $permiso->DELETED_AT }}</td>
+                                <td>
+                                    {{-- Botón para restaurar --}}
+                                    <form action="{{ route('permisos.restore', $permiso->ID) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-undo"></i> Restaurar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
 
-    {{-- Botón de cancelar que redirige al index de permisos --}}
-    <div class="mt-4">
-        <a href="{{ url('/permisos-index') }}" class="btn btn-secondary">Cancelar</a>
+        {{-- Botón de cancelar --}}
+        <div class="text-center mt-4">
+            <a href="{{ url('/permisos-index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
     </div>
 </div>
 @endsection

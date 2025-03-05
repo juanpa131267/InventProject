@@ -3,208 +3,146 @@
 namespace App\Http\Controllers;
 
 use App\Models\mod_Inventario;
+use App\Models\mod_Foto;
+use App\Models\mod_Usuario;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Schema(
- *     schema="Inventario",
- *     type="object",
- *     title="Inventario",
- *     description="Modelo de Inventario",
- *     required={"NOMBRE", "ID_FOTOS", "ID_USUARIOS"},
- *     @OA\Property(property="NOMBRE", type="string", description="Nombre del inventario"),
- *     @OA\Property(property="ID_FOTOS", type="integer", description="ID de la foto asociada"),
- *     @OA\Property(property="ID_USUARIOS", type="integer", description="ID del usuario propietario")
- * )
- */
-
 class InventarioController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/inventarios",
-     *     summary="Obtener todos los inventarios",
-     *     tags={"Inventario"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de inventarios",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Inventario"))
-     *     )
-     * )
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(mod_Inventario::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+    
+        $query = mod_Inventario::query()
+            ->whereNull('DELETED_AT') // Excluir inventarios eliminados
+            ->with([
+                'USUARIOS' => function ($q) {
+                    $q->select('ID', 'LOGIN');
+                },
+                'FOTOS' => function ($q) {
+                    $q->select('ID', 'URL'); // Ajusta según la estructura de tu tabla de fotos
+                }
+            ]);
+    
+        if ($search) {
+            $query->where('NOMBRE', 'LIKE', "%{$search}%");
+        }
+    
+        $inventarios = $query->paginate(10);
+    
+        return response()->json($inventarios);
     }
+    
 
-    /**
-     * @OA\Post(
-     *     path="/api/inventarios",
-     *     summary="Crear un nuevo inventario",
-     *     tags={"Inventario"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Inventario")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Inventario creado exitosamente"
-     *     )
-     * )
-     */
+    // Mostrar formulario de creación
+    public function create()
+    {
+        $usuarios = mod_Usuario::all(); // O el método correcto para obtener los usuarios
+        $fotos = mod_Foto::all();
+        return view('VistasCrud.VistasInventario.create', compact('usuarios', 'fotos'));
+    }
+    
+
+    // Almacenar un nuevo inventario
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'NOMBRE' => 'required|string|max:255',
-            'ID_FOTOS' => 'required|integer',
-            'ID_USUARIOS' => 'required|integer'
-        ]);
+            'ID_FOTOS' => 'nullable|integer|exists:FOTOS,ID',
+            'ID_USUARIOS' => 'required|integer|exists:USUARIOS,ID',
+        ]);        
 
-        $inventario = mod_Inventario::create($request->all());
-        return response()->json($inventario, Response::HTTP_CREATED);
+        try {
+            mod_Inventario::create($validatedData);
+            return redirect()->route('inventarios.index')->with('success', 'Inventario creado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('inventarios.create')->with('error', 'Error: ' . $e->getMessage());
+        }        
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/inventarios/{id}",
-     *     summary="Obtener un inventario por ID",
-     *     tags={"Inventario"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del inventario",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información del inventario",
-     *         @OA\JsonContent(ref="#/components/schemas/Inventario")
-     *     )
-     * )
-     */
+    // Mostrar un inventario específico
     public function show($id)
     {
-        $inventario = mod_Inventario::find($id);
-        if (!$inventario) {
+        try {
+            $inventario = mod_Inventario::findOrFail($id);
+            return response()->json($inventario, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Inventario no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($inventario, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/inventarios/{id}",
-     *     summary="Actualizar un inventario",
-     *     tags={"Inventario"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del inventario",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Inventario")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Inventario actualizado"
-     *     )
-     * )
-     */
+    public function edit($id)
+    {
+        $inventario = mod_Inventario::findOrFail($id);
+        $usuarios = mod_Usuario::all(); // Obtener todos los usuarios
+        $fotos = mod_Foto::all();
+    
+        return view('VistasCrud.VistasInventario.edit', compact('inventario', 'usuarios', 'fotos'));
+    }
+    
+    // Actualizar un inventario
     public function update(Request $request, $id)
     {
-        $inventario = mod_Inventario::find($id);
-        if (!$inventario) {
-            return response()->json(['error' => 'Inventario no encontrado'], Response::HTTP_NOT_FOUND);
-        }
+        $inventario = mod_Inventario::findOrFail($id);
 
-        $request->validate([
+        $validatedData = $request->validate([
             'NOMBRE' => 'required|string|max:255',
-            'ID_FOTOS' => 'required|integer',
-            'ID_USUARIOS' => 'required|integer'
+            'ID_FOTOS' => 'nullable|integer|exists:FOTOS,ID',
+            'ID_USUARIOS' => 'required|integer|exists:USUARIOS,ID',
         ]);
 
-        $inventario->update($request->all());
-        return response()->json($inventario, Response::HTTP_OK);
+        try {
+            $inventario->update($validatedData);
+            return redirect()->route('inventarios.index')->with('success', 'Inventario actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('inventarios.index')->with('error', 'Error al actualizar el inventario.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/inventarios/{id}",
-     *     summary="Eliminar un inventario",
-     *     tags={"Inventario"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del inventario",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Inventario eliminado"
-     *     )
-     * )
-     */
+    // Eliminar un inventario (lógica)
     public function destroy($id)
     {
         $inventario = mod_Inventario::find($id);
+
         if (!$inventario) {
             return response()->json(['error' => 'Inventario no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        $inventario->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        try {
+            $inventario->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar inventario'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/inventarios/eliminados",
-     *     summary="Obtener inventarios eliminados",
-     *     tags={"Inventario"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de inventarios eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Inventario"))
-     *     )
-     * )
-     */
+    // Mostrar inventarios eliminados
     public function deleted()
     {
-        return response()->json(mod_Inventario::onlyTrashed()->get(), Response::HTTP_OK);
+        $inventariosEliminados = mod_Inventario::onlyTrashed()->get();
+        return view('VistasCrud.VistasInventario.deleted', compact('inventariosEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/inventarios/restore/{id}",
-     *     summary="Restaurar un inventario eliminado",
-     *     tags={"Inventario"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del inventario",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Inventario restaurado"
-     *     )
-     * )
-     */
-
+    // Restaurar un inventario eliminado
     public function restore($id)
     {
-        $inventario = mod_Inventario::onlyTrashed()->find($id);
-        if (!$inventario) {
-            return response()->json(['error' => 'Inventario no encontrado'], Response::HTTP_NOT_FOUND);
-        }
-
+        $inventario = mod_Inventario::withTrashed()->findOrFail($id);
         $inventario->restore();
-        return response()->json($inventario, Response::HTTP_OK);
+
+        return redirect()->route('inventarios.deleted')->with('success', 'Inventario restaurado exitosamente.');
+    }
+
+    // Eliminación permanente
+    public function forceDelete($id)
+    {
+        $inventario = mod_Inventario::withTrashed()->findOrFail($id);
+
+        try {
+            $inventario->forceDelete();
+            return redirect()->route('inventarios.deleted')->with('success', 'Inventario eliminado permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->route('inventarios.deleted')->with('error', 'Error al eliminar permanentemente el inventario.');
+        }
     }
 }

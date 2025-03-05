@@ -3,196 +3,148 @@
 namespace App\Http\Controllers;
 
 use App\Models\mod_ArticuloxProveedor;
+use App\Models\mod_Articulo;
+use App\Models\mod_Proveedores;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-
-/**
- * @OA\Schema(
- *     schema="ArticuloxProveedor",
- *     type="object",
- *     title="ArticuloxProveedor",
- *     description="Modelo de Artículo por Proveedor",
- *     required={"ID_ARTICULOS", "ID_PROVEEDORES"},
- *     @OA\Property(property="ID_ARTICULOS", type="integer", description="ID del artículo asociado"),
- *     @OA\Property(property="ID_PROVEEDORES", type="integer", description="ID del proveedor asociado")
- * )
- */
 
 class ArticuloxProveedorController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxproveedor",
-     *     summary="Obtener todas las asignaciones de artículos a proveedores",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de asignaciones",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ArticuloxProveedor"))
-     *     )
-     * )
-     */
-    public function index()
+    // Listar relaciones Articulo-Proveedor con opción de búsqueda
+    public function index(Request $request)
     {
-        return response()->json(mod_ArticuloxProveedor::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+
+        $query = mod_ArticuloxProveedor::query()
+            ->whereNull('DELETED_AT')
+            ->whereHas('ARTICULOS', function ($q) {
+                $q->whereNull('DELETED_AT');
+            })
+            ->whereHas('PROVEEDORES', function ($q) {
+                $q->whereNull('DELETED_AT');
+            })
+            ->with([
+                'ARTICULOS' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'NOMBRE', 'MARCA');
+                },
+                'PROVEEDORES' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'NOMBRE', 'TELEFONO', 'CORREO');
+                }
+            ]);
+
+        if ($search) {
+            $query->whereHas('ARTICULOS', function ($q) use ($search) {
+                $q->where('NOMBRE', 'LIKE', "%{$search}%")
+                  ->orWhere('MARCA', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $articulosxproveedores = $query->paginate(10);
+        return response()->json($articulosxproveedores);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/articuloxproveedor",
-     *     summary="Asignar un artículo a un proveedor",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxProveedor")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Asignación creada exitosamente"
-     *     )
-     * )
-     */
+    public function create()
+    {
+        $proveedores = mod_Proveedores::all();
+        $articulosSinProveedor = mod_Articulo::whereNotIn('ID', function ($query) {
+            $query->select('ID_ARTICULOS')->from('ARTICULOXPROVEEDOR');
+        })->get();
+    
+        return view('VistasCrud.VistasArticuloxProveedor.create', compact('articulosSinProveedor', 'proveedores'));
+    }
+    
+    // Almacenar una nueva relación Artículo-Proveedor
     public function store(Request $request)
     {
-        $request->validate([
-            'ID_ARTICULOS' => 'required|integer',
-            'ID_PROVEEDORES' => 'required|integer'
+        $validatedData = $request->validate([
+            'ID_ARTICULOS' => 'required|integer|exists:ARTICULOS,ID',
+            'ID_PROVEEDORES' => 'required|integer|exists:PROVEEDORES,ID',
         ]);
-
-        $articuloxproveedor = mod_ArticuloxProveedor::create($request->all());
-        return response()->json($articuloxproveedor, Response::HTTP_CREATED);
+    
+        try {
+            mod_ArticuloxProveedor::create($validatedData);
+            return redirect()->route('articuloxproveedores.index')->with('success', 'Proveedor asignado correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articuloxproveedores.index')->with('error', 'Error al asignar el proveedor.');
+        }
     }
+    
 
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxproveedor/{id}",
-     *     summary="Obtener una asignación por ID",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Detalles de la asignación",
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxProveedor")
-     *     )
-     * )
-     */
+
+    // Mostrar una relación específica
     public function show($id)
     {
-        $articuloxproveedor = mod_ArticuloxProveedor::find($id);
-        if (!$articuloxproveedor) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+        try {
+            $articuloxproveedor = mod_ArticuloxProveedor::with(['ARTICULOS', 'PROVEEDORES'])->findOrFail($id);
+            return response()->json($articuloxproveedor, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($articuloxproveedor, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articuloxproveedor/{id}",
-     *     summary="Actualizar una asignación",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxProveedor")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Asignación actualizada"
-     *     )
-     * )
-     */
+    // Mostrar la vista de edición
+    public function edit($id)
+    {
+        $articuloxproveedor = mod_ArticuloxProveedor::findOrFail($id);
+        $articulos = mod_Articulo::all();
+        $proveedores = mod_Proveedores::all();
+
+        return view('VistasCrud.VistasArticuloxProveedor.edit', compact('articuloxproveedor', 'articulos', 'proveedores'));
+    }
+
+    // Actualizar una relación artículo-proveedor existente
     public function update(Request $request, $id)
     {
-        $articuloxproveedor = mod_ArticuloxProveedor::find($id);
-        if (!$articuloxproveedor) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-        $request->validate([
-            'ID_ARTICULOS' => 'required|integer',
-            'ID_PROVEEDORES' => 'required|integer'
+        $articuloxproveedor = mod_ArticuloxProveedor::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'ID_ARTICULOS'   => 'required|integer|exists:ARTICULOS,ID',
+            'ID_PROVEEDORES' => 'required|integer|exists:PROVEEDORES,ID',
         ]);
-        $articuloxproveedor->update($request->all());
-        return response()->json($articuloxproveedor, Response::HTTP_OK);
+
+        try {
+            $articuloxproveedor->update($validatedData);
+            return redirect(url('/articuloxproveedores-index'))->with('success', 'Relación artículo-proveedor actualizada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/articuloxproveedores-index'))->with('error', 'Error al actualizar la relación artículo-proveedor.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/articuloxproveedor/{id}",
-     *     summary="Eliminar una asignación",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Asignación eliminada"
-     *     )
-     * )
-     */
+
+    // Eliminar lógicamente una relación
     public function destroy($id)
     {
         $articuloxproveedor = mod_ArticuloxProveedor::find($id);
+
         if (!$articuloxproveedor) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        $articuloxproveedor->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+
+        try {
+            $articuloxproveedor->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar la relación'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxproveedor/eliminados",
-     *     summary="Obtener todas las asignaciones eliminados",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de asignaciones eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ArticuloxProveedor"))
-     *     )
-     * )
-     */
-
+    // Mostrar las relaciones eliminadas
     public function deleted()
     {
-        return response()->json(mod_ArticuloxProveedor::onlyTrashed()->get(), Response::HTTP_OK);
+        $articulosxproveedoresEliminados = mod_ArticuloxProveedor::onlyTrashed()->get();
+        return view('VistasCrud.VistasArticuloxProveedor.deleted', compact('articulosxproveedoresEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articuloxproveedor/restore/{id}",
-     *     summary="Restaurar una asignación eliminada",
-     *     tags={"ArticuloxProveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Asignación restaurada"
-     *     )
-     * )
-     */
-
+    // Restaurar una relación eliminada
     public function restore($id)
     {
         $articuloxproveedor = mod_ArticuloxProveedor::withTrashed()->findOrFail($id);
-        $articuloxproveedor->restore();
-        return response()->json($articuloxproveedor, Response::HTTP_OK);
+
+        try {
+            $articuloxproveedor->restore();
+            return redirect()->route('articuloxproveedores.deleted')->with('success', 'Relación restaurada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articuloxproveedores.deleted')->with('error', 'Error al restaurar la relación.');
+        }
     }
 }

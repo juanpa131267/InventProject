@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\mod_ArticuloxProveedor;
+use App\Models\mod_Articulo;
+use App\Models\mod_Proveedores;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,11 +24,12 @@ class mod_ArticuloxProveedor extends Model
     
     public function ARTICULOS()
     {
-        return $this->belongsTo(mod_Articulo::class, 'ID_ARTICULOS');
+        return $this->belongsTo(mod_Articulo::class, 'ID_ARTICULOS', 'ID');
     }
-
+    
     public function PROVEEDORES()
     {
-        return $this->belongsTo(mod_Proveedores::class, 'ID_PROVEEDORES');
+        return $this->belongsTo(mod_Proveedores::class, 'ID_PROVEEDORES', 'ID');
     }
+    
 }

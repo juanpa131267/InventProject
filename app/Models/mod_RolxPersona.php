@@ -23,11 +23,12 @@ class mod_RolxPersona extends Model
 
     public function PERSONAS()
     {
-        return $this->belongsTo(mod_Persona::class, 'ID_PERSONAS'); 
+        return $this->belongsTo(mod_Persona::class, 'ID_PERSONAS', 'ID');
     }
-
+    
     public function ROLES()
     {
-        return $this->belongsTo(mod_Rol::class, 'ID_ROLES');
+        return $this->belongsTo(mod_Rol::class, 'ID_ROLES', 'ID');
     }
+    
 }

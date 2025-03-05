@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\mod_Articulo;
+use App\Models\mod_ArticuloxFoto;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,12 +23,12 @@ class mod_Foto extends Model
     
     public function INVENTARIO()
     {
-        return $this->belongsTo(mod_Inventario::class, 'ID_FOTOS');
+        return $this->belongsTo(mod_Inventario::class, 'ID_INVENTARIO', 'ID');
     }
 
     public function ARTICULOXFOTO()
     {
-        return $this->hasMany(mod_ArticuloxFoto::class, 'ID_FOTOS');
+        return $this->hasMany(mod_ArticuloxFoto::class, 'ID_ARTICULOXFOTO', 'ID');
     }
 
 }

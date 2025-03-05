@@ -6,205 +6,131 @@ use App\Models\mod_Proveedores;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Schema(
- *     schema="Proveedor",
- *     type="object",
- *     title="Proveedor",
- *     description="Modelo de Proveedor",
- *     required={"NOMBRE", "TELEFONO", "CORREO", "DIRECCION"},
- *     @OA\Property(property="NOMBRE", type="string", description="Nombre del proveedor"),
- *     @OA\Property(property="TELEFONO", type="string", description="Teléfono del proveedor"),
- *     @OA\Property(property="CORREO", type="string", description="Correo del proveedor"),
- *     @OA\Property(property="DIRECCION", type="string", description="Dirección del proveedor")
- * )
- */
-
 class ProveedorController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/proveedores",
-     *     summary="Obtener todos los proveedores",
-     *     tags={"Proveedor"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de proveedores",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Proveedor"))
-     *     )
-     * )
-     */
-    public function index()
+    // Mostrar lista de proveedores con paginación y búsqueda
+    public function index(Request $request)
     {
-        return response()->json(mod_Proveedores::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+
+        try {
+            $query = mod_Proveedores::query();
+            if (!empty($search)) {
+                $query->where('NOMBRE', 'like', "%{$search}%")
+                      ->orWhere('CORREO', 'like', "%{$search}%");
+            }
+            $proveedores = $query->paginate(15);
+            return response()->json($proveedores, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener proveedores'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/proveedores",
-     *     summary="Crear un nuevo proveedor",
-     *     tags={"Proveedor"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Proveedor")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Proveedor creado exitosamente"
-     *     )
-     * )
-     */
+    // Mostrar vista de creación de proveedores
+    public function create()
+    {
+        return view('VistasCrud.VistasProveedor.create');
+    }
+
+    // Almacenar un nuevo proveedor
     public function store(Request $request)
     {
-        $request->validate([
-            'NOMBRE'    => 'required|string|max:255',
-            'TELEFONO'  => 'required|string|max:20',
-            'CORREO'    => 'required|string|email|max:255',
-            'DIRECCION' => 'required|string|max:255'
+        $validatedData = $request->validate([
+            'NOMBRE' => 'required|string|max:255',
+            'TELEFONO' => 'nullable|string|max:20',
+            'CORREO' => 'nullable|email|max:255|unique:PROVEEDORES,CORREO',
+            'DIRECCION' => 'nullable|string',
         ]);
 
-        $proveedor = mod_Proveedores::create($request->all());
-        return response()->json($proveedor, Response::HTTP_CREATED);
+        try {
+            mod_Proveedores::create($validatedData);
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor creado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('proveedores.index')->with('error', 'No se pudo crear el proveedor. Intente nuevamente.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/proveedores/{id}",
-     *     summary="Obtener un proveedor por ID",
-     *     tags={"Proveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del proveedor",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información del proveedor",
-     *         @OA\JsonContent(ref="#/components/schemas/Proveedor")
-     *     )
-     * )
-     */
+    // Mostrar un proveedor específico
     public function show($id)
     {
-        $proveedor = mod_Proveedores::find($id);
-        if (!$proveedor) {
+        try {
+            $proveedor = mod_Proveedores::findOrFail($id);
+            return response()->json($proveedor, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Proveedor no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($proveedor, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/proveedores/{id}",
-     *     summary="Actualizar un proveedor",
-     *     tags={"Proveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del proveedor",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Proveedor")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Proveedor actualizado"
-     *     )
-     * )
-     */
+    // Mostrar vista de edición de un proveedor
+    public function edit($id)
+    {
+        $proveedor = mod_Proveedores::findOrFail($id);
+        return view('VistasCrud.VistasProveedor.edit', compact('proveedor'));
+    }
+
+    // Actualizar un proveedor existente
     public function update(Request $request, $id)
     {
-        $proveedor = mod_Proveedores::find($id);
-        if (!$proveedor) {
-            return response()->json(['error' => 'Proveedor no encontrado'], Response::HTTP_NOT_FOUND);
-        }
+        $proveedor = mod_Proveedores::findOrFail($id);
 
-        $request->validate([
-            'NOMBRE'    => 'required|string|max:255',
-            'TELEFONO'  => 'required|string|max:20',
-            'CORREO'    => 'required|string|email|max:255',
-            'DIRECCION' => 'required|string|max:255'
+        $validatedData = $request->validate([
+            'NOMBRE' => 'required|string|max:255',
+            'TELEFONO' => 'nullable|string|max:20',
+            'CORREO' => "nullable|email|max:255|unique:PROVEEDORES,CORREO,$id,ID",
+            'DIRECCION' => 'nullable|string',
         ]);
 
-        $proveedor->update($request->all());
-        return response()->json($proveedor, Response::HTTP_OK);
+        try {
+            $proveedor->update($validatedData);
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('proveedores.index')->with('error', 'Error al actualizar proveedor.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/proveedores/{id}",
-     *     summary="Eliminar un proveedor",
-     *     tags={"Proveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del proveedor",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Proveedor eliminado"
-     *     )
-     * )
-     */
+    // Eliminar un proveedor (lógica)
     public function destroy($id)
     {
         $proveedor = mod_Proveedores::find($id);
+
         if (!$proveedor) {
             return response()->json(['error' => 'Proveedor no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        $proveedor->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        try {
+            $proveedor->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar proveedor'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/proveedores/eliminados",
-     *     summary="Obtener todos los proveedores eliminados",
-     *     tags={"Proveedor"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de proveedores eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Proveedor"))
-     *     )
-     * )
-     */
-
+    // Mostrar proveedores eliminados
     public function deleted()
     {
-        return response()->json(mod_Proveedores::onlyTrashed()->get(), Response::HTTP_OK);
+        $proveedoresEliminados = mod_Proveedores::onlyTrashed()->get();
+        return view('VistasCrud.VistasProveedor.deleted', compact('proveedoresEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/proveedores/restore/{id}",
-     *     summary="Restaurar un proveedor eliminado",
-     *     tags={"Proveedor"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del proveedor",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Proveedor restaurado"
-     *     )
-     * )
-     */
-
+    // Restaurar un proveedor eliminado
     public function restore($id)
     {
         $proveedor = mod_Proveedores::withTrashed()->findOrFail($id);
         $proveedor->restore();
-        return response()->json($proveedor, Response::HTTP_OK);
+
+        return redirect()->route('proveedores.deleted')->with('success', 'Proveedor restaurado exitosamente.');
+    }
+
+    // Eliminación forzada (borrado permanente)
+    public function forceDelete($id)
+    {
+        $proveedor = mod_Proveedores::withTrashed()->findOrFail($id);
+
+        try {
+            $proveedor->forceDelete();
+            return redirect()->route('proveedores.deleted')->with('success', 'Proveedor eliminado permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->route('proveedores.deleted')->with('error', 'Error al eliminar proveedor permanentemente.');
+        }
     }
 }

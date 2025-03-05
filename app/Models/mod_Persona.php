@@ -24,18 +24,19 @@ class mod_Persona extends Model
     
     public function USUARIOS()
     {
-        return $this->hasOne(mod_Usuario::class, 'ID_PERSONAS'); 
+        return $this->hasOne(mod_Usuario::class, 'ID_PERSONAS', 'ID');
     }
 
     public function ROLES()
     {
-        return $this->hasMany(mod_RolxPersona::class, 'ID_PERSONAS');
-    }
+        return $this->belongsToMany(mod_Rol::class, 'ROLXPERSONA', 'ID_PERSONAS', 'ID_ROLES');
+    }  
 
     public function ROLXPERSONA()
     {
-        return $this->hasMany(mod_RolxPersona::class, 'ID_PERSONAS');
+        return $this->hasMany(mod_RolxPersona::class, 'ID_PERSONAS', 'ID');
     }
+    
 
 }
 

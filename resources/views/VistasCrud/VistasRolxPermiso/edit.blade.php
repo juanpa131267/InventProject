@@ -1,36 +1,50 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Editar Asignación de Permiso</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Administrar Permisos para el Rol: <strong>{{ $rol->DESCRIPCION }}</strong></h1>
 
-    <form action="{{ route('rolxpermiso.update', $rolxpermiso->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+        <form action="{{ route('rolxpermisos.update', $rol->ID) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        {{-- Mostrar el Rol seleccionado --}} 
-        <div class="form-group mb-3">
-            <label for="rol_id">Rol</label>
-            <input type="text" class="form-control" value="{{ $rolxpermiso->rol->descripcion }} (ID: {{ $rolxpermiso->rol_id }})" readonly />
-            <input type="hidden" name="rol_id" value="{{ $rolxpermiso->rol_id }}" />
-        </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Permiso</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($permisos as $permiso)
+                            <tr>
+                                <td>{{ $permiso->ID }}</td>
+                                <td>{{ $permiso->NOMBRE }}</td>
+                                <td>
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ $permiso->ID }}"
+                                            id="permiso_{{ $permiso->ID }}" {{ in_array($permiso->ID, $permisosAsignados) ? 'checked' : '' }}>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-        {{-- Select de Permiso --}} 
-        <div class="form-group mb-3">
-            <label for="permiso_id">Permiso</label>
-            <select name="permiso_id" id="permiso_id" class="form-control" required>
-                @foreach($permisos as $permiso)
-                    <option value="{{ $permiso->id }}" {{ $rolxpermiso->permiso_id == $permiso->id ? 'selected' : '' }}>
-                        {{ $permiso->nombre }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="{{ url('/rolxpermiso-index') }}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+            {{-- Botones de acción --}}
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <a href="{{ route('rolxpermisos.index') }}" class="btn btn-secondary px-4">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

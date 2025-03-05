@@ -3,202 +3,150 @@
 namespace App\Http\Controllers;
 
 use App\Models\mod_RolxPersona;
-use App\Models\mod_Rol;
 use App\Models\mod_Persona;
+use App\Models\mod_Rol;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Schema(
- *     schema="RolxPersona",
- *     type="object",
- *     title="RolxPersona",
- *     description="Modelo de Rol por Persona",
- *     required={"ID_ROLES", "ID_PERSONAS"},
- *     @OA\Property(property="ID_ROLES", type="integer", description="ID del rol asociado"),
- *     @OA\Property(property="ID_PERSONAS", type="integer", description="ID de la persona asociada")
- * )
- */
+class RolxPersonaController extends Controller
+{
+    // Listar relaciones usuario-rol con opción de búsqueda
+    public function index(Request $request)
+    {
+        $search = $request->query('q');
+    
+        $query = mod_RolxPersona::query()
+            ->whereNull('DELETED_AT') // Excluir relaciones eliminadas
+            ->whereHas('PERSONAS', function ($q) {
+                $q->whereNull('DELETED_AT'); // Excluir personas eliminadas
+            })
+            ->whereHas('ROLES', function ($q) {
+                $q->whereNull('DELETED_AT'); // Excluir roles eliminados
+            })
+            ->with([
+                'PERSONAS' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'NOMBRES', 'APELLIDO');
+                },
+                'ROLES' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'DESCRIPCION');
+                }
+            ]);
+    
+        if ($search) {
+            $query->whereHas('PERSONAS', function ($q) use ($search) {
+                $q->where('NOMBRES', 'LIKE', "%{$search}%")
+                  ->orWhere('APELLIDO', 'LIKE', "%{$search}%");
+            });
+        }
+    
+        $rolxpersonas = $query->paginate(10);
+    
+        return response()->json($rolxpersonas);
+    }
+    
+    
+    
 
- class RolxPersonaController extends Controller
- {
-     /**
-      * @OA\Get(
-      *     path="/api/rolxpersona",
-      *     summary="Obtener todas las asignaciones de roles a personas",
-      *     tags={"RolxPersona"},
-      *     @OA\Response(
-      *         response=200,
-      *         description="Lista de roles asignados a personas",
-      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RolxPersona"))
-      *     )
-      * )
-      */
-     public function index()
-     {
-         return response()->json(mod_RolxPersona::all(), Response::HTTP_OK);
-     }
- 
-     /**
-      * @OA\Post(
-      *     path="/api/rolxpersona",
-      *     summary="Asignar un nuevo rol a una persona",
-      *     tags={"RolxPersona"},
-      *     @OA\RequestBody(
-      *         required=true,
-      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
-      *     ),
-      *     @OA\Response(
-      *         response=201,
-      *         description="Rol asignado exitosamente"
-      *     )
-      * )
-      */
-     public function store(Request $request)
-     {
-         $request->validate([
-             'ID_ROLES' => 'required|integer',
-             'ID_PERSONAS' => 'required|integer'
-         ]);
- 
-         $rolxpersona = mod_RolxPersona::create($request->all());
-         return response()->json($rolxpersona, Response::HTTP_CREATED);
-     }
- 
-     /**
-      * @OA\Get(
-      *     path="/api/rolxpersona/{id}",
-      *     summary="Obtener una asignación de rol por ID",
-      *     tags={"RolxPersona"},
-      *     @OA\Parameter(
-      *         name="id",
-      *         in="path",
-      *         description="ID de la asignación",
-      *         required=true,
-      *         @OA\Schema(type="integer")
-      *     ),
-      *     @OA\Response(
-      *         response=200,
-      *         description="Información de la asignación de rol",
-      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
-      *     )
-      * )
-      */
-     public function show($id)
-     {
-         $rolxpersona = mod_RolxPersona::find($id);
-         if (!$rolxpersona) {
-             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-         }
-         return response()->json($rolxpersona, Response::HTTP_OK);
-     }
+    // Mostrar la vista de creación
+    public function create()
+    {
+        // Obtener solo las personas que NO tienen un rol asignado
+        $personasSinRol = mod_Persona::whereDoesntHave('ROLXPERSONA')->get();
+        $roles = mod_Rol::all();
+    
+        return view('VistasCrud.VistasRolxPersona.create', compact('personasSinRol', 'roles'));
+    }
+    
 
-     /**
-      * @OA\Put(
-      *     path="/api/rolxpersona/{id}",
-      *     summary="Actualizar una asignación de rol",
-      *     tags={"RolxPersona"},
-      *     @OA\Parameter(
-      *         name="id",
-      *         in="path",
-      *         description="ID de la asignación",
-      *         required=true,
-      *         @OA\Schema(type="integer")
-      *     ),
-      *     @OA\RequestBody(
-      *         required=true,
-      *         @OA\JsonContent(ref="#/components/schemas/RolxPersona")
-      *     ),
-      *     @OA\Response(
-      *         response=200,
-      *         description="Asignación actualizada"
-      *     )
-      * )
-      */
+    // Almacenar una nueva relación usuario-rol
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'ID_PERSONAS' => 'required|integer|exists:PERSONAS,ID',
+            'ID_ROLES'    => 'required|integer|exists:ROLES,ID',
+        ]);
 
-     public function update(Request $request, $id)
-     {
-         $rolxpersona = mod_RolxPersona::find($id);
-         if (!$rolxpersona) {
-             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-         }
-         $request->validate([
-             'ID_ROLES' => 'required|integer',
-             'ID_PERSONAS' => 'required|integer'
-         ]);
-         $rolxpersona->update($request->all());
-         return response()->json($rolxpersona, Response::HTTP_OK);
-     }
- 
-     /**
-      * @OA\Delete(
-      *     path="/api/rolxpersona/{id}",
-      *     summary="Eliminar una asignación de rol",
-      *     tags={"RolxPersona"},
-      *     @OA\Parameter(
-      *         name="id",
-      *         in="path",
-      *         description="ID de la asignación",
-      *         required=true,
-      *         @OA\Schema(type="integer")
-      *     ),
-      *     @OA\Response(
-      *         response=204,
-      *         description="Asignación eliminada"
-      *     )
-      * )
-      */
-     public function destroy($id)
-     {
-         $rolxpersona = mod_RolxPersona::find($id);
-         if (!$rolxpersona) {
-             return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-         }
-         $rolxpersona->delete();
-         return response()->json(null, Response::HTTP_NO_CONTENT);
-     }
- 
-     /**
-      * @OA\Get(
-      *     path="/api/rolxpersona/eliminados",
-      *     summary="Obtener asignaciones eliminadas",
-      *     tags={"RolxPersona"},
-      *     @OA\Response(
-      *         response=200,
-      *         description="Lista de asignaciones eliminadas",
-      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RolxPersona"))
-      *     )
-      * )
-      */
-     public function deleted()
-     {
-         return response()->json(mod_RolxPersona::onlyTrashed()->get(), Response::HTTP_OK);
-     }
- 
-     /**
-      * @OA\Put(
-      *     path="/api/rolxpersona/restore/{id}",
-      *     summary="Restaurar una asignación eliminada",
-      *     tags={"RolxPersona"},
-      *     @OA\Parameter(
-      *         name="id",
-      *         in="path",
-      *         description="ID de la asignación",
-      *         required=true,
-      *         @OA\Schema(type="integer")
-      *     ),
-      *     @OA\Response(
-      *         response=200,
-      *         description="Asignación restaurada"
-      *     )
-      * )
-      */
-     public function restore($id)
-     {
-         $rolxpersona = mod_RolxPersona::withTrashed()->findOrFail($id);
-         $rolxpersona->restore();
-         return response()->json($rolxpersona, Response::HTTP_OK);
-     }
- }
- 
+        try {
+            mod_RolxPersona::create($validatedData);
+            return redirect(url('/rolxpersonas-index'))->with('success', 'Rol asignado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/rolxpersonas-index'))->with('error', 'No se pudo asignar el rol. Intente nuevamente.');
+        }
+    }
+
+    // Mostrar una relación usuario-rol específica
+    public function show($id)
+    {
+        try {
+            $rolxpersona = mod_RolxPersona::with(['PERSONAS', 'ROLES'])->findOrFail($id);
+            return response()->json($rolxpersona, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    // Mostrar la vista de edición
+    public function edit($id)
+    {
+        $rolxpersona = mod_RolxPersona::findOrFail($id);
+        $personas = mod_Persona::all();
+        $roles = mod_Rol::all();
+    
+        return view('VistasCrud.VistasRolxPersona.edit', compact('rolxpersona', 'personas', 'roles'));
+    }
+
+    // Actualizar una relación usuario-rol existente
+    public function update(Request $request, $id)
+    {
+        $rolxpersona = mod_RolxPersona::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'ID_PERSONAS' => 'required|integer|exists:PERSONAS,ID',
+            'ID_ROLES'    => 'required|integer|exists:ROLES,ID',
+        ]);
+
+        try {
+            $rolxpersona->update($validatedData);
+            return redirect(url('/rolxpersonas-index'))->with('success', 'Rol actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/rolxpersonas-index'))->with('error', 'Error al actualizar el rol.');
+        }
+    }
+
+    // Eliminar lógicamente una relación usuario-rol (Soft Delete)
+    public function destroy($id)
+    {
+        $rolxpersona = mod_RolxPersona::find($id);
+
+        if (!$rolxpersona) {
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $rolxpersona->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar la relación'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Mostrar las relaciones eliminadas
+    public function deleted()
+    {
+        $rolxpersonaEliminados = mod_RolxPersona::onlyTrashed()->get();
+        return view('VistasCrud.VistasRolxPersona.deleted', compact('rolxpersonaEliminados'));
+    }
+
+    // Restaurar una relación eliminada
+    public function restore($id)
+    {
+        $rolxpersona = mod_RolxPersona::withTrashed()->findOrFail($id);
+
+        try {
+            $rolxpersona->restore();
+            return redirect()->route('rolxpersonas.deleted')->with('success', 'Relación restaurada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('rolxpersonas.deleted')->with('error', 'Error al restaurar la relación.');
+        }
+    }
+}

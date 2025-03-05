@@ -12,7 +12,7 @@
                     "Articulo"
                 ],
                 "summary": "Obtener todos los artículos",
-                "operationId": "021362b92b70d8c24f566bb0db7178d5",
+                "operationId": "4449ab4c4ce4218674b780e577757e13",
                 "responses": {
                     "200": {
                         "description": "Lista de artículos",
@@ -34,7 +34,7 @@
                     "Articulo"
                 ],
                 "summary": "Crear un nuevo artículo",
-                "operationId": "1576d3467aeea24559ab2a70e9a963d9",
+                "operationId": "8bea847f5ac22e860a59baef3d4f0274",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -58,7 +58,7 @@
                     "Articulo"
                 ],
                 "summary": "Obtener un artículo por ID",
-                "operationId": "53ebb83e59d006abd1bd488176d98899",
+                "operationId": "c5ae4902ec27c1e7860d4648a94431de",
                 "parameters": [
                     {
                         "name": "id",
@@ -88,7 +88,7 @@
                     "Articulo"
                 ],
                 "summary": "Actualizar un artículo",
-                "operationId": "8b012fffca1a2f25e37727c1097c0471",
+                "operationId": "dd492556508f09a2fd5dc057a659717d",
                 "parameters": [
                     {
                         "name": "id",
@@ -121,7 +121,7 @@
                     "Articulo"
                 ],
                 "summary": "Eliminar un artículo",
-                "operationId": "de4809e8ad8eea751584f66ed2aab554",
+                "operationId": "32cf892a0293901ba1e0a1377e2d12a5",
                 "parameters": [
                     {
                         "name": "id",
@@ -146,7 +146,7 @@
                     "Articulo"
                 ],
                 "summary": "Obtener todos los artículos eliminados",
-                "operationId": "f8c19520b37a749ae071db26a977221e",
+                "operationId": "5337349932dae5c4b1bf95bcabc5e408",
                 "responses": {
                     "200": {
                         "description": "Lista de artículos eliminados",
@@ -170,7 +170,7 @@
                     "Articulo"
                 ],
                 "summary": "Restaurar un artículo eliminado",
-                "operationId": "7bbccb6309168f9f5e5d456b192bb12c",
+                "operationId": "3bd296444008b30e2040a326acceda47",
                 "parameters": [
                     {
                         "name": "id",
@@ -195,7 +195,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Obtener todas las asignaciones de artículos a categorías",
-                "operationId": "596d671b7d0d3e4f792e30d80abdef26",
+                "operationId": "d882186146779cf53350016cfa0e3db4",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones",
@@ -217,7 +217,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Asignar un nuevo artículo a una categoría",
-                "operationId": "2666e58bda8552055dddb75d47672cc3",
+                "operationId": "f94bfe97d7aba657ca51dac26b30f43e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -241,7 +241,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Obtener una asignación de artículo por ID",
-                "operationId": "a908f932efffaba9bfd61765b67ca050",
+                "operationId": "6a0457a4fa76417168b046db47631abe",
                 "parameters": [
                     {
                         "name": "id",
@@ -271,7 +271,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Actualizar una asignación de artículo",
-                "operationId": "bd5000a25c810cccb19806db8a4b488b",
+                "operationId": "68836fc91a6ed80e06486873060fbfec",
                 "parameters": [
                     {
                         "name": "id",
@@ -304,7 +304,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Eliminar una asignación de artículo",
-                "operationId": "16d353433ce9b265bf781d35bf69eaf9",
+                "operationId": "8c8699f135a49c8fb3422672c53acccb",
                 "parameters": [
                     {
                         "name": "id",
@@ -329,7 +329,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Obtener todas las asignaciones de artículos a categorías eliminados",
-                "operationId": "337a3830bb28a78f958ece41816528c1",
+                "operationId": "fac44e37b14c68d6af5c927d70399e57",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones eliminados",
@@ -353,7 +353,7 @@
                     "ArticuloxCategoria"
                 ],
                 "summary": "Restaurar una asignación de artículo eliminada",
-                "operationId": "71157730289ff4eaf3c465994cd1b07a",
+                "operationId": "234fad4a7de948e7c81dc6cc9d870640",
                 "parameters": [
                     {
                         "name": "id",
@@ -378,7 +378,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Obtener todas las asignaciones de artículos a fotos",
-                "operationId": "d6be24e45a89f07fef7ff982bfbf3b6e",
+                "operationId": "9560779d9c0ac7d1d987a530ba9d3e8e",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones",
@@ -400,7 +400,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Asignar una foto a un artículo",
-                "operationId": "945cc4786e4fe74e1126e53182ead4ed",
+                "operationId": "63a43b543c59680e34bd56d27281992a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -424,7 +424,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Obtener una asignación por ID",
-                "operationId": "661e84f082395748110ba1e454c1b911",
+                "operationId": "ec4fd0c7c6fa8a5e0d0ec6cb6e9ab27d",
                 "parameters": [
                     {
                         "name": "id",
@@ -453,7 +453,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Actualizar una asignación",
-                "operationId": "f598079eee4ac0c85e9da523a0227b5a",
+                "operationId": "a94d6c15f79484277b89daa553fcab85",
                 "parameters": [
                     {
                         "name": "id",
@@ -485,7 +485,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Eliminar una asignación",
-                "operationId": "0bbcefabbf40171847135ce4dbb4ce3d",
+                "operationId": "9f729e6de8b29f8066bbd74fdafd2b90",
                 "parameters": [
                     {
                         "name": "id",
@@ -509,7 +509,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Obtener asignaciones eliminadas",
-                "operationId": "29e95518accb203c04de448cd45c662e",
+                "operationId": "477822518c4d85d904d49cfaf06ed99e",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones eliminadas"
@@ -523,7 +523,7 @@
                     "ArticuloxFoto"
                 ],
                 "summary": "Restaurar una asignación eliminada",
-                "operationId": "31c9847ca7db43b4a753a7d6198b3af4",
+                "operationId": "99f4f02d668ebe3bb7c19b832012aa78",
                 "parameters": [
                     {
                         "name": "id",
@@ -547,7 +547,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Obtener todas las asignaciones de artículos a proveedores",
-                "operationId": "518cfc2011f6ae7df44f0366a69c1dcb",
+                "operationId": "d96e48c0881cc63c2d9a7668124b2e18",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones",
@@ -569,7 +569,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Asignar un artículo a un proveedor",
-                "operationId": "13325289ced25d8ec6c9efb172176994",
+                "operationId": "3e5b0a573f67f97cc962bb5c8f613262",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -593,7 +593,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Obtener una asignación por ID",
-                "operationId": "7a73a268a808248a865d2ea6a73de7cb",
+                "operationId": "8e71af62b1d832691d9c4ff9b0182675",
                 "parameters": [
                     {
                         "name": "id",
@@ -622,7 +622,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Actualizar una asignación",
-                "operationId": "69dff976c9c18b36779f4f045451beb5",
+                "operationId": "6d90ce58cb52c565f5b072f72053d47c",
                 "parameters": [
                     {
                         "name": "id",
@@ -654,7 +654,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Eliminar una asignación",
-                "operationId": "a6e4534809ca63c3342a6a2e54cbc96e",
+                "operationId": "a657083fa1043ae1ae781d8114a7cf10",
                 "parameters": [
                     {
                         "name": "id",
@@ -678,7 +678,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Obtener todas las asignaciones eliminados",
-                "operationId": "e0a9f5a0a5d83a2f03909adb00572556",
+                "operationId": "daf897d21e677451fbbaca38c2093121",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones eliminados",
@@ -702,7 +702,7 @@
                     "ArticuloxProveedor"
                 ],
                 "summary": "Restaurar una asignación eliminada",
-                "operationId": "974c77a2aa0c582a5a652fe69b35d8f2",
+                "operationId": "8b0352a68bb63349f0376778d55f4fb3",
                 "parameters": [
                     {
                         "name": "id",
@@ -726,7 +726,7 @@
                     "Categoria"
                 ],
                 "summary": "Obtener todas las categorías",
-                "operationId": "66bfb3e0bf7747700be142ec5329dfae",
+                "operationId": "2c8b5a042cbbb9a890adcd83cde48054",
                 "responses": {
                     "200": {
                         "description": "Lista de categorías",
@@ -748,7 +748,7 @@
                     "Categoria"
                 ],
                 "summary": "Crear una nueva categoría",
-                "operationId": "acace4e67a5f9bbaa41b456c95b2bd05",
+                "operationId": "7863a308b52f24306be2bc3124bc7e43",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -772,7 +772,7 @@
                     "Categoria"
                 ],
                 "summary": "Obtener una categoría por ID",
-                "operationId": "af067e125b5f9a1b1306d9e5c2a5867e",
+                "operationId": "baed9db156dc26ff1b634f86ed43d983",
                 "parameters": [
                     {
                         "name": "id",
@@ -802,7 +802,7 @@
                     "Categoria"
                 ],
                 "summary": "Actualizar una categoría",
-                "operationId": "3465ccc7d2520d34b4c457d4158ae6ac",
+                "operationId": "a4e2e009bbc0f61b1daa3869ca4d027c",
                 "parameters": [
                     {
                         "name": "id",
@@ -835,7 +835,7 @@
                     "Categoria"
                 ],
                 "summary": "Eliminar una categoría",
-                "operationId": "a37893cb60d6b5ca9b1d6d23dbe83041",
+                "operationId": "a11a2cf92880a260bb6b509ca6b84f23",
                 "parameters": [
                     {
                         "name": "id",
@@ -860,7 +860,7 @@
                     "Categoria"
                 ],
                 "summary": "Obtener categorías eliminadas",
-                "operationId": "a611ee622465fdb471b9fd6aa117e2e5",
+                "operationId": "ce7985f12d27b1a9a6f705ee58900105",
                 "responses": {
                     "200": {
                         "description": "Lista de categorías eliminadas",
@@ -884,7 +884,7 @@
                     "Categoria"
                 ],
                 "summary": "Restaurar una categoría eliminada",
-                "operationId": "2c3cca3dc95c015b34cccf41f1127767",
+                "operationId": "1984a519fc8bd6c5254d762859100819",
                 "parameters": [
                     {
                         "name": "id",
@@ -903,13 +903,196 @@
                 }
             }
         },
+        "/api/fotos": {
+            "get": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Obtener todas las fotos",
+                "operationId": "e7f17f619464c2184d9d3cd93fa01fc2",
+                "responses": {
+                    "200": {
+                        "description": "Lista de fotos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Foto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Crear una nueva foto",
+                "operationId": "3ebb58c9f66597bd75b7dd4eb8c656ec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Foto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Foto creada exitosamente"
+                    }
+                }
+            }
+        },
+        "/api/fotos/{id}": {
+            "get": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Obtener una foto por ID",
+                "operationId": "2696bbc4f37b8aedd54ec6da55137b94",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la foto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información de la foto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Foto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Actualizar una foto",
+                "operationId": "ed3c6d5d33242ec08886ff56a11bf002",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la foto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Foto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Foto actualizada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Eliminar una foto",
+                "operationId": "5b89dff16ad6d2f40d9c19eb73b68263",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la foto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Foto eliminada"
+                    }
+                }
+            }
+        },
+        "/api/fotos/eliminadas": {
+            "get": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Obtener todas las fotos eliminadas",
+                "operationId": "06dd96023a8012f2ec8a8996d049856f",
+                "responses": {
+                    "200": {
+                        "description": "Lista de fotos eliminadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Foto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/fotos/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Foto"
+                ],
+                "summary": "Restaurar una foto eliminada",
+                "operationId": "2d1337c46cbdd4f66fe6d1f7e0a731a8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la foto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Foto restaurada"
+                    }
+                }
+            }
+        },
         "/api/inventarios": {
             "get": {
                 "tags": [
                     "Inventario"
                 ],
                 "summary": "Obtener todos los inventarios",
-                "operationId": "721655bcda437b9623a493da77e2fd43",
+                "operationId": "7f46a3f74392d5a9d9e6949194632f85",
                 "responses": {
                     "200": {
                         "description": "Lista de inventarios",
@@ -931,7 +1114,7 @@
                     "Inventario"
                 ],
                 "summary": "Crear un nuevo inventario",
-                "operationId": "e2544a669fb3cce9342d9cf42dfbf205",
+                "operationId": "084b1c7babb0d3439b8bacfc805ef876",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -955,7 +1138,7 @@
                     "Inventario"
                 ],
                 "summary": "Obtener un inventario por ID",
-                "operationId": "61ca5382ad56e1c47831198872094a4a",
+                "operationId": "39cb30a132747b5bd5a3950d05ea79be",
                 "parameters": [
                     {
                         "name": "id",
@@ -985,7 +1168,7 @@
                     "Inventario"
                 ],
                 "summary": "Actualizar un inventario",
-                "operationId": "dd96c5e900591f5e268aa18a8320e524",
+                "operationId": "21d5da44609d803cd8f9d353f6ef530c",
                 "parameters": [
                     {
                         "name": "id",
@@ -1018,7 +1201,7 @@
                     "Inventario"
                 ],
                 "summary": "Eliminar un inventario",
-                "operationId": "72192e1c345bc6be025c87d0b8b860d4",
+                "operationId": "0b1f2f9981d604f3e93b85179dc5fb77",
                 "parameters": [
                     {
                         "name": "id",
@@ -1043,7 +1226,7 @@
                     "Inventario"
                 ],
                 "summary": "Obtener inventarios eliminados",
-                "operationId": "b20cdbb5ac720c11ee79c03d192c6030",
+                "operationId": "f64c6d23123dac92342739e12f550421",
                 "responses": {
                     "200": {
                         "description": "Lista de inventarios eliminados",
@@ -1067,7 +1250,7 @@
                     "Inventario"
                 ],
                 "summary": "Restaurar un inventario eliminado",
-                "operationId": "d395dac2b6ab40c5ba3b4739a1cdda3d",
+                "operationId": "09b1f30170e282d68614ac56c1cea7e2",
                 "parameters": [
                     {
                         "name": "id",
@@ -1092,7 +1275,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Obtener todos los movimientos de inventario",
-                "operationId": "91d2de076c38020883cbc332e247e10c",
+                "operationId": "f7854f5111b9de9f51e04be7778adcbd",
                 "responses": {
                     "200": {
                         "description": "Lista de movimientos de inventario",
@@ -1114,7 +1297,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Crear un nuevo movimiento de inventario",
-                "operationId": "d67e4664447da3a718490ce2c0a64446",
+                "operationId": "0386872ab84e4bf1f8f33248d72021e5",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1138,7 +1321,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Obtener un movimiento de inventario por ID",
-                "operationId": "99627206f329f9280fa6aeca95d6e8e7",
+                "operationId": "d30c224c55efc6cda1261b23b6da6009",
                 "parameters": [
                     {
                         "name": "id",
@@ -1167,7 +1350,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Actualizar un movimiento de inventario por ID",
-                "operationId": "54b842e9c8e7942733c2d00de04765af",
+                "operationId": "a0340941734d16da439cecbaef5d1952",
                 "parameters": [
                     {
                         "name": "id",
@@ -1206,7 +1389,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Eliminar un movimiento de inventario por ID",
-                "operationId": "0596e80c63f993f1a4da922275fe2156",
+                "operationId": "71d78c76d56ca800fa232b70cf415dc4",
                 "parameters": [
                     {
                         "name": "id",
@@ -1230,7 +1413,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Obtener todos los movimientos de inventario eliminados",
-                "operationId": "914c4048a64e18f23698d0c7aa46e538",
+                "operationId": "11d30eaa259cd2a388e7d8821e556bee",
                 "responses": {
                     "200": {
                         "description": "Lista de movimientos de inventario eliminados",
@@ -1254,7 +1437,7 @@
                     "MovimientoInventario"
                 ],
                 "summary": "Restaurar un movimiento de inventario eliminado por ID",
-                "operationId": "e4422db70b9ae040ef2938dbfcb3920c",
+                "operationId": "b290fff16ddd22303a563f6ed9e0040a",
                 "parameters": [
                     {
                         "name": "id",
@@ -1285,7 +1468,7 @@
                     "Permiso"
                 ],
                 "summary": "Obtener todos los permisos",
-                "operationId": "8feceb78c9ff332ad552bb98ae0657d3",
+                "operationId": "37fc511bc0a70c010998e2e75eb89575",
                 "responses": {
                     "200": {
                         "description": "Lista de permisos",
@@ -1307,7 +1490,7 @@
                     "Permiso"
                 ],
                 "summary": "Crear un nuevo permiso",
-                "operationId": "f5312187af2d66fda3392fd3222089fb",
+                "operationId": "09ea7a62f61bc0c43a37917ad1b252c8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1331,7 +1514,7 @@
                     "Permiso"
                 ],
                 "summary": "Obtener un permiso por ID",
-                "operationId": "36d51e43024849e1a739a7021da163ce",
+                "operationId": "82fb7b0474d3984408dbe5059e9dd1e0",
                 "parameters": [
                     {
                         "name": "id",
@@ -1361,7 +1544,7 @@
                     "Permiso"
                 ],
                 "summary": "Actualizar un permiso",
-                "operationId": "bc6245339799a3f8a9a81e93faa293b6",
+                "operationId": "bff4dc30e4092990121de8beff1d0d83",
                 "parameters": [
                     {
                         "name": "id",
@@ -1394,7 +1577,7 @@
                     "Permiso"
                 ],
                 "summary": "Eliminar un permiso",
-                "operationId": "1b8b8d685cca25f33209f68652f78fb8",
+                "operationId": "1acfd407ec671e1c6f444cf59b01384e",
                 "parameters": [
                     {
                         "name": "id",
@@ -1419,7 +1602,7 @@
                     "Permiso"
                 ],
                 "summary": "Obtener permisos eliminados",
-                "operationId": "55ee6cd6433446cba91cd8c75791b844",
+                "operationId": "2490ffaf569e855608287048c7555f81",
                 "responses": {
                     "200": {
                         "description": "Lista de permisos eliminados",
@@ -1443,7 +1626,7 @@
                     "Permiso"
                 ],
                 "summary": "Restaurar un permiso eliminado",
-                "operationId": "e2228f12a6d71ba5d8a2ffa0b8f4b8a9",
+                "operationId": "8d5fbccfd41d01b6833fe43341566984",
                 "parameters": [
                     {
                         "name": "id",
@@ -1468,7 +1651,7 @@
                     "Persona"
                 ],
                 "summary": "Obtener todas las personas",
-                "operationId": "8601618afc784c4736e52022f7f6f047",
+                "operationId": "61b244e2e00e7f57366a7476f24ad019",
                 "responses": {
                     "200": {
                         "description": "Lista de personas",
@@ -1490,7 +1673,7 @@
                     "Persona"
                 ],
                 "summary": "Crear una nueva persona",
-                "operationId": "d016dca10e1a596471fe5aa5d4c99841",
+                "operationId": "e9fc637dc6bf9b3b5e6fc806c93a5fc4",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1514,7 +1697,7 @@
                     "Persona"
                 ],
                 "summary": "Obtener una persona por ID",
-                "operationId": "9b70ed1d108dd682ec86b7c48f328884",
+                "operationId": "441e99a8884ba95767ed709e8bb065e2",
                 "parameters": [
                     {
                         "name": "id",
@@ -1543,7 +1726,7 @@
                     "Persona"
                 ],
                 "summary": "Actualizar una persona",
-                "operationId": "2a6e07dc32d26f218b13c0a2dc442fdf",
+                "operationId": "328a1d31cfe4dbed251c9fb854055cbb",
                 "parameters": [
                     {
                         "name": "id",
@@ -1575,7 +1758,7 @@
                     "Persona"
                 ],
                 "summary": "Eliminar una persona",
-                "operationId": "8564ed4ed7e2d07b09bda4aac6184710",
+                "operationId": "6d3fb094d0fc4e9ce0a8b79fa68c6861",
                 "parameters": [
                     {
                         "name": "id",
@@ -1599,7 +1782,7 @@
                     "Persona"
                 ],
                 "summary": "Obtener personas eliminadas",
-                "operationId": "9faccd65528ce5f94a3c0982d8a4ca2a",
+                "operationId": "e28b30602d59f0f2dda130339e3b8245",
                 "responses": {
                     "200": {
                         "description": "Lista de personas eliminadas",
@@ -1623,7 +1806,7 @@
                     "Persona"
                 ],
                 "summary": "Restaurar una persona eliminada",
-                "operationId": "70bbdfbb88734a4dc46d7381423aa956",
+                "operationId": "b90d820b6f3399bc0e9ae7896b63251d",
                 "parameters": [
                     {
                         "name": "id",
@@ -1647,7 +1830,7 @@
                     "Proveedor"
                 ],
                 "summary": "Obtener todos los proveedores",
-                "operationId": "5eb7d790ae5c32c59bd58744f5ed3da5",
+                "operationId": "72e5b5cc97e5dec31ab0b095f9efaf4b",
                 "responses": {
                     "200": {
                         "description": "Lista de proveedores",
@@ -1669,7 +1852,7 @@
                     "Proveedor"
                 ],
                 "summary": "Crear un nuevo proveedor",
-                "operationId": "5c1bcfb0dbccf86c376dc7a47fdff311",
+                "operationId": "2c0ebd74132e8a2571e06c18f6b67161",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1693,7 +1876,7 @@
                     "Proveedor"
                 ],
                 "summary": "Obtener un proveedor por ID",
-                "operationId": "1898d8b0458ba55e2c8240363838a2a6",
+                "operationId": "ab1b72c83ebef43e5cc4158b63ba86cf",
                 "parameters": [
                     {
                         "name": "id",
@@ -1723,7 +1906,7 @@
                     "Proveedor"
                 ],
                 "summary": "Actualizar un proveedor",
-                "operationId": "72364f0ee2e9c4041a2f38af705cea3b",
+                "operationId": "42ae3ece906f40d23753463b42ace3f7",
                 "parameters": [
                     {
                         "name": "id",
@@ -1756,7 +1939,7 @@
                     "Proveedor"
                 ],
                 "summary": "Eliminar un proveedor",
-                "operationId": "8b7ae059b2d7afad943975d96233b0b7",
+                "operationId": "53d854bbca64c16134d7adfe7a10d920",
                 "parameters": [
                     {
                         "name": "id",
@@ -1781,7 +1964,7 @@
                     "Proveedor"
                 ],
                 "summary": "Obtener todos los proveedores eliminados",
-                "operationId": "853377f4a07f5095fd8b548822026d59",
+                "operationId": "8e1e373d82320589f5e4c21f0e1b1568",
                 "responses": {
                     "200": {
                         "description": "Lista de proveedores eliminados",
@@ -1805,7 +1988,7 @@
                     "Proveedor"
                 ],
                 "summary": "Restaurar un proveedor eliminado",
-                "operationId": "1e36c165c25fd4abfe41f44be0412c9f",
+                "operationId": "b5f52a39edae387de77757d481f17a54",
                 "parameters": [
                     {
                         "name": "id",
@@ -1830,7 +2013,7 @@
                     "Rol"
                 ],
                 "summary": "Obtener todos los roles",
-                "operationId": "bf78d43aa8b5c576b78b08b73c404cb6",
+                "operationId": "2ceefc03839df109c5bb58474f0bd853",
                 "responses": {
                     "200": {
                         "description": "Lista de roles",
@@ -1852,7 +2035,7 @@
                     "Rol"
                 ],
                 "summary": "Crear un nuevo rol",
-                "operationId": "19029466a195a478441990551cb1e8c9",
+                "operationId": "a478fb270e3c4981d6eff1179757bd0d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1876,7 +2059,7 @@
                     "Rol"
                 ],
                 "summary": "Obtener un rol por ID",
-                "operationId": "bcca3423f39b15abd0d0214dd6169f3c",
+                "operationId": "c433308677a0214bc9b84bb658083cd9",
                 "parameters": [
                     {
                         "name": "id",
@@ -1906,7 +2089,7 @@
                     "Rol"
                 ],
                 "summary": "Actualizar un rol",
-                "operationId": "0444e2e7859bbaa81749d090c06415a1",
+                "operationId": "23330232d37ed7b9b177b9ddb47c31e1",
                 "parameters": [
                     {
                         "name": "id",
@@ -1939,7 +2122,7 @@
                     "Rol"
                 ],
                 "summary": "Eliminar un rol",
-                "operationId": "de55f66883ee7b0d98d50e5e82e94f7e",
+                "operationId": "7cd4d2306dc4235acb8c4b1a6a33e74d",
                 "parameters": [
                     {
                         "name": "id",
@@ -1964,7 +2147,7 @@
                     "Rol"
                 ],
                 "summary": "Obtener roles eliminados",
-                "operationId": "b1bd72811276697257b8db663abb1bb2",
+                "operationId": "cd0878ba11327bc60fe6a8f07874f5a6",
                 "responses": {
                     "200": {
                         "description": "Lista de roles eliminados",
@@ -1988,7 +2171,7 @@
                     "Rol"
                 ],
                 "summary": "Restaurar un rol eliminado",
-                "operationId": "c5c7364d27ea812ebfbb2a5070901391",
+                "operationId": "fb6ba322ebbf674948de2eb42eed834c",
                 "parameters": [
                     {
                         "name": "id",
@@ -2013,7 +2196,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Obtener todas las relaciones entre roles y permisos",
-                "operationId": "00e7255899af841d16a319f1d275b0cd",
+                "operationId": "09a46c128a67cac8f22c16605596dd9d",
                 "responses": {
                     "200": {
                         "description": "Lista de relaciones",
@@ -2035,7 +2218,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Crear una nueva relación entre rol y permiso",
-                "operationId": "2daa02802f19fc990d4c85b90f11644e",
+                "operationId": "efb201aa6731add54c038e686dbe258c",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2059,7 +2242,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Obtener una relación por ID",
-                "operationId": "ce45b8977280c81f932ee23a884621a6",
+                "operationId": "2fcc476a07d6d42e75731ccbaf645fe3",
                 "parameters": [
                     {
                         "name": "id",
@@ -2089,7 +2272,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Actualizar una relación",
-                "operationId": "b1f9455f27622df999f4154ae2b3bee1",
+                "operationId": "724111c95ef3825052a1d4c89e226017",
                 "parameters": [
                     {
                         "name": "id",
@@ -2122,7 +2305,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Eliminar una relación",
-                "operationId": "572289dbeedef7139a947d1a2bb78bbc",
+                "operationId": "84c7772ac8cf9af74ef8a3e94c60abae",
                 "parameters": [
                     {
                         "name": "id",
@@ -2147,7 +2330,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Obtener relaciones eliminadas",
-                "operationId": "7b2c61fc80d80ef1111dbfba56f36b8b",
+                "operationId": "a5197fe85343846c1e8a471c5419bdd9",
                 "responses": {
                     "200": {
                         "description": "Lista de relaciones eliminadas",
@@ -2171,7 +2354,7 @@
                     "RolxPermiso"
                 ],
                 "summary": "Restaurar una relación eliminada",
-                "operationId": "0b23f47bbd6cc8f3888bf36a743117ce",
+                "operationId": "dfb9b908bee48971e1bb4ac97437479b",
                 "parameters": [
                     {
                         "name": "id",
@@ -2196,7 +2379,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Obtener todas las asignaciones de roles a personas",
-                "operationId": "53a7e02c60b927df60e64e15d6b892ac",
+                "operationId": "bf9175a2c2330bc7800a8c064f867e00",
                 "responses": {
                     "200": {
                         "description": "Lista de roles asignados a personas",
@@ -2218,7 +2401,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Asignar un nuevo rol a una persona",
-                "operationId": "5b2b3c678075d13278b04c5f996399ec",
+                "operationId": "14f5935ff3c7f6d2f371692cef5296d8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2242,7 +2425,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Obtener una asignación de rol por ID",
-                "operationId": "c955e56aed2100790609e7e74d374bec",
+                "operationId": "a4e30c38bf71c9003cef15fe460f5e84",
                 "parameters": [
                     {
                         "name": "id",
@@ -2272,7 +2455,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Actualizar una asignación de rol",
-                "operationId": "1a8195d16c12ef6ae71e44d2e1c351f8",
+                "operationId": "6d1589273137e0cbd86fab71be764161",
                 "parameters": [
                     {
                         "name": "id",
@@ -2305,7 +2488,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Eliminar una asignación de rol",
-                "operationId": "1f5f6b34d7c9d11958102d4ac3704724",
+                "operationId": "bc3e2f99540e954f7ebe119d9da351fc",
                 "parameters": [
                     {
                         "name": "id",
@@ -2330,7 +2513,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Obtener asignaciones eliminadas",
-                "operationId": "4c933ddc0e54ff3a887303d934af823d",
+                "operationId": "cd8a0b8726c879411c3e775238496c30",
                 "responses": {
                     "200": {
                         "description": "Lista de asignaciones eliminadas",
@@ -2354,7 +2537,7 @@
                     "RolxPersona"
                 ],
                 "summary": "Restaurar una asignación eliminada",
-                "operationId": "a5b80292f3ce765101c7e58ea8235b5b",
+                "operationId": "01fcf608e8aff536e0a466132005ef27",
                 "parameters": [
                     {
                         "name": "id",
@@ -2379,7 +2562,7 @@
                     "Usuario"
                 ],
                 "summary": "Obtener todos los usuarios",
-                "operationId": "e9d4d8b419dbef04b5748fbf9ccf3881",
+                "operationId": "4ec44b55f12afaea2b0771c8f52a7bb5",
                 "responses": {
                     "200": {
                         "description": "Lista de usuarios",
@@ -2401,7 +2584,7 @@
                     "Usuario"
                 ],
                 "summary": "Crear un nuevo usuario",
-                "operationId": "4e9dbcbdaaaf9faab196a82d5cbaea23",
+                "operationId": "f666b03244462cbbde4c05a534420c4f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2425,7 +2608,7 @@
                     "Usuario"
                 ],
                 "summary": "Obtener un usuario por ID",
-                "operationId": "e9ac05ddc4ea46d8848b012d7d92e3ac",
+                "operationId": "732b19ceff8a6b2d98253a061e6629ec",
                 "parameters": [
                     {
                         "name": "id",
@@ -2455,7 +2638,7 @@
                     "Usuario"
                 ],
                 "summary": "Actualizar un usuario",
-                "operationId": "27ac608b6dd8b8e7c7c45b10c5210b3e",
+                "operationId": "f9a3a3065d0492a18cbd869b27f9acb1",
                 "parameters": [
                     {
                         "name": "id",
@@ -2488,7 +2671,7 @@
                     "Usuario"
                 ],
                 "summary": "Eliminar un usuario",
-                "operationId": "ea700764859a665afd38bb39c2842f1c",
+                "operationId": "18d3f394475fed826763abf95f60e917",
                 "parameters": [
                     {
                         "name": "id",
@@ -2513,7 +2696,7 @@
                     "Usuario"
                 ],
                 "summary": "Obtener usuarios eliminados",
-                "operationId": "6f8454f43ad57e21f7cc87549ed995d6",
+                "operationId": "539c65cb49eb57974798e31ee7121822",
                 "responses": {
                     "200": {
                         "description": "Lista de usuarios eliminados",
@@ -2537,7 +2720,7 @@
                     "Usuario"
                 ],
                 "summary": "Restaurar un usuario eliminado",
-                "operationId": "c6e9c297450620d3d3ba5f4482e93808",
+                "operationId": "6633dc9be42daf2d04baeb381681256f",
                 "parameters": [
                     {
                         "name": "id",
@@ -2670,6 +2853,26 @@
                 "properties": {
                     "NOMBRE": {
                         "description": "Nombre de la categoría",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Foto": {
+                "title": "Foto",
+                "description": "Modelo de Foto",
+                "required": [
+                    "URL",
+                    "DESCRIPCION",
+                    "FECHA_SUBIDA"
+                ],
+                "properties": {
+                    "URL": {
+                        "description": "URL de la foto",
+                        "type": "string"
+                    },
+                    "DESCRIPCION": {
+                        "description": "Descripción de la foto",
                         "type": "string"
                     }
                 },
@@ -2929,6 +3132,10 @@
         {
             "name": "Categoria",
             "description": "Categoria"
+        },
+        {
+            "name": "Foto",
+            "description": "Foto"
         },
         {
             "name": "Inventario",

@@ -1,40 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Gestión de Rol por Persona</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center mb-4">Gestión de Roles por Persona</h1>
 
-    {{-- Mensajes de éxito o error --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+        {{-- Mostrar mensajes de éxito o error --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-    <div class="mb-4">
-        <a href="{{ route('rolxpersona.create') }}" class="btn btn-success">Asignar Rol</a>
-        <input type="text" id="search-login" class="form-control d-inline-block w-50" placeholder="Buscar por persona" aria-label="Buscar por">
-        <a href="{{ route('rolxpersona.deleted') }}" class="btn btn-warning">Asignaciones Eliminadas</a>
+        {{-- Botones y barra de búsqueda --}}
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{{ route('rolxpersonas.create') }}" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Asignar Rol
+            </a>
+            <input type="text" id="search-rolxpersona" class="form-control w-50" placeholder="Buscar por nombre de persona...">
+            <a href="{{ route('rolxpersonas.deleted') }}" class="btn btn-warning">
+                <i class="fas fa-trash-alt"></i> Asignaciones Eliminadas
+            </a>
+        </div>
+
+        {{-- Tabla de relaciones Persona-Rol --}}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Persona</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="rolxpersonas-table">
+                    {{-- Datos cargados dinámicamente con AJAX --}}
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Paginación --}}
+        <div id="pagination" class="d-flex justify-content-center"></div>
     </div>
-
-    {{-- Tabla de asignaciones --}}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID RolxPersona</th>
-                <th>Persona (ID)</th>
-                <th>Rol</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="rolxpersona-table">
-            {{-- Aquí se cargarán los datos dinámicamente con AJAX --}}
-        </tbody>
-    </table>
 </div>
 
 <script>
@@ -42,68 +60,56 @@
         fetchRolxPersona();
     });
 
-    document.getElementById('search-login').addEventListener('input', function() {
-        let search = this.value;
-        fetchRolxPersona(search);
+    document.getElementById('search-rolxpersona').addEventListener('input', function() {
+        fetchRolxPersona(this.value.trim());
     });
 
-    function fetchRolxPersona(search = '') {
-        let url = search ? `/api/rolxpersona?q=${search}` : '/api/rolxpersona';
-
-        fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('No se encontraron datos');
-            }
-            return response.json();
-        })
+    function fetchRolxPersona(search = '', page = 1) {
+        let url = `/api/rolxpersonas?q=${encodeURIComponent(search)}&page=${page}`;
+        fetch(url, { method: 'GET', headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => response.json())
         .then(data => {
-            let tableBody = document.getElementById('rolxpersona-table');
+            let tableBody = document.getElementById('rolxpersonas-table');
             tableBody.innerHTML = '';
-
-            data.forEach(item => {
-                let personaNombre = item.persona ? `${item.persona.nombres} ${item.persona.apellido}` : 'Desconocido';
-                let rolDescripcion = item.rol ? item.rol.descripcion : 'Sin rol';
-
-                let row = `
-                    <tr data-id="${item.id}">
-                        <td>${item.id}</td>
-                        <td>${personaNombre} (${item.persona ? item.persona.id : 'Sin ID'})</td>
-                        <td>${rolDescripcion}</td>
-                        <td>
-                            <a href="/rolxpersona/${item.id}/edit" class="btn btn-primary btn-sm">Editar</a>
-                            <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Eliminar</button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        })
-        .catch(error => {
-            console.error('Error al buscar asignaciones:', error);
-            document.getElementById('rolxpersona-table').innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron asignaciones.</td></tr>';
-        });
+            if (data.data && data.data.length > 0) {
+                data.data.forEach(item => {
+                    let personaNombre = item.p_e_r_s_o_n_a_s ? `${item.p_e_r_s_o_n_a_s.NOMBRES} ${item.p_e_r_s_o_n_a_s.APELLIDO}` : 'Sin persona';
+                    let rolDescripcion = item.r_o_l_e_s ? item.r_o_l_e_s.DESCRIPCION : 'Sin rol';
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${item.ID ?? 'N/A'}</td>
+                            <td>${personaNombre}</td>
+                            <td>${rolDescripcion}</td>
+                            <td>
+                                <a href="/rolxpersonas/${item.ID}/edit" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Editar</a>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="${item.ID}"><i class="fas fa-trash"></i> Eliminar</button>
+                            </td>
+                        </tr>`;
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron asignaciones.</td></tr>';
+            }
+            if (typeof renderPagination === 'function') {
+                renderPagination(data, 'fetchRolxPersona', 'search-rolxpersona');
+            }
+        }).catch(error => console.error('Error al obtener asignaciones:', error));
     }
 
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('delete-btn')) {
-            let id = event.target.getAttribute('data-id');
-            if (confirm('¿Estás seguro de eliminar esta asignación?')) {
-                fetch(`/rolxpersona/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        fetchRolxPersona(); // Refresh the data after deletion
-                    } else {
-                        alert('Error al eliminar la asignación');
-                    }
-                });
+            if (confirm('¿Está seguro de eliminar esta asignación de rol?')) {
+                deleteRolxPersona(event.target.getAttribute('data-id'));
             }
         }
     });
+
+    function deleteRolxPersona(id) {
+        fetch(`/rolxpersonas/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
+        })
+        .then(response => response.ok ? fetchRolxPersona() : console.error('Error al eliminar'))
+        .catch(error => console.error('Error al eliminar asignación:', error));
+    }
 </script>
 @endsection

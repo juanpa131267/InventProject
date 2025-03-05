@@ -3,199 +3,160 @@
 namespace App\Http\Controllers;
 
 use App\Models\mod_ArticuloxCategoria;
+use App\Models\mod_Articulo;
+use App\Models\mod_Categoria;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Schema(
- *     schema="ArticuloxCategoria",
- *     type="object",
- *     title="ArticuloxCategoria",
- *     description="Modelo de Articulo por Categoria",
- *     required={"ID_ARTICULOS", "ID_CATEGORIAS"},
- *     @OA\Property(property="ID_ARTICULOS", type="integer", description="ID del articulo asociado"),
- *     @OA\Property(property="ID_CATEGORIAS", type="integer", description="ID de la categoria asociada")
- * )
- */
-
 class ArticuloxCategoriaController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxcategoria",
-     *     summary="Obtener todas las asignaciones de artículos a categorías",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de asignaciones",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ArticuloxCategoria"))
-     *     )
-     * )
-     */
-    public function index()
+    // Listar relaciones Artículo-Categoría con opción de búsqueda
+    public function index(Request $request)
     {
-        return response()->json(mod_ArticuloxCategoria::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+
+        $query = mod_ArticuloxCategoria::query()
+            ->whereNull('DELETED_AT')
+            ->whereHas('ARTICULOS', function ($q) {
+                $q->whereNull('DELETED_AT');
+            })
+            ->whereHas('CATEGORIAS', function ($q) {
+                $q->whereNull('DELETED_AT');
+            })
+            ->with([
+                'ARTICULOS' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'NOMBRE', 'MARCA');
+                },
+                'CATEGORIAS' => function ($q) {
+                    $q->whereNull('DELETED_AT')->select('ID', 'NOMBRE');
+                }
+            ]);
+
+        if ($search) {
+            $query->whereHas('ARTICULOS', function ($q) use ($search) {
+                $q->where('NOMBRE', 'LIKE', "%{$search}%")
+                  ->orWhere('MARCA', 'LIKE', "%{$search}%");
+            })->orWhereHas('CATEGORIAS', function ($q) use ($search) {
+                $q->where('NOMBRE', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $articulosxcategorias = $query->paginate(10);
+        return response()->json($articulosxcategorias);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/articuloxcategoria",
-     *     summary="Asignar un nuevo artículo a una categoría",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxCategoria")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Asignación creada exitosamente"
-     *     )
-     * )
-     */
+    public function create()
+    {
+        $categorias = mod_Categoria::all();
+        $articulosSinCategoria = mod_Articulo::whereNotIn('ID', function ($query) {
+            $query->select('ID_ARTICULOS')->from('ARTICULOXCATEGORIA');
+        })->get();
+
+        return view('VistasCrud.VistasArticuloxCategoria.create', compact('articulosSinCategoria', 'categorias'));
+    }
+
+    // Almacenar una nueva relación Artículo-Categoría
     public function store(Request $request)
     {
-        $request->validate([
-            'ID_ARTICULOS' => 'required|integer',
-            'ID_CATEGORIAS' => 'required|integer'
+        $validatedData = $request->validate([
+            'ID_ARTICULOS'  => 'required|integer|exists:ARTICULOS,ID',
+            'ID_CATEGORIAS' => 'required|integer|exists:CATEGORIAS,ID',
         ]);
 
-        $articuloxcategoria = mod_ArticuloxCategoria::create($request->all());
-        return response()->json($articuloxcategoria, Response::HTTP_CREATED);
+        try {
+            mod_ArticuloxCategoria::create($validatedData);
+            return redirect()->route('articuloxcategorias.index')->with('success', 'Categoría asignada correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articuloxcategorias.index')->with('error', 'Error al asignar la categoría.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxcategoria/{id}",
-     *     summary="Obtener una asignación de artículo por ID",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la asignación",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información de la asignación",
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxCategoria")
-     *     )
-     * )
-     */
+    // Mostrar una relación específica
     public function show($id)
     {
-        $articuloxcategoria = mod_ArticuloxCategoria::find($id);
-        if (!$articuloxcategoria) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+        try {
+            $articuloxcategoria = mod_ArticuloxCategoria::with(['ARTICULOS', 'CATEGORIAS'])->findOrFail($id);
+            return response()->json($articuloxcategoria, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($articuloxcategoria, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articuloxcategoria/{id}",
-     *     summary="Actualizar una asignación de artículo",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la asignación",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ArticuloxCategoria")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Asignación actualizada"
-     *     )
-     * )
-     */
+    // Mostrar la vista de edición
+    public function edit($id)
+    {
+        $articuloxcategoria = mod_ArticuloxCategoria::findOrFail($id);
+        $articulos = mod_Articulo::all();
+        $categorias = mod_Categoria::all();
+
+        return view('VistasCrud.VistasArticuloxCategoria.edit', compact('articuloxcategoria', 'articulos', 'categorias'));
+    }
+
+    // Actualizar una relación Artículo-Categoría existente
     public function update(Request $request, $id)
     {
-        $articuloxcategoria = mod_ArticuloxCategoria::find($id);
-        if (!$articuloxcategoria) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
-        }
-        $request->validate([
-            'ID_ARTICULOS' => 'required|integer',
-            'ID_CATEGORIAS' => 'required|integer'
+        $articuloxcategoria = mod_ArticuloxCategoria::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'ID_ARTICULOS'  => 'required|integer|exists:ARTICULOS,ID',
+            'ID_CATEGORIAS' => 'required|integer|exists:CATEGORIAS,ID',
         ]);
-        $articuloxcategoria->update($request->all());
-        return response()->json($articuloxcategoria, Response::HTTP_OK);
+
+        try {
+            $articuloxcategoria->update($validatedData);
+            return redirect(url('/articuloxcategorias-index'))->with('success', 'Relación artículo-categoría actualizada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/articuloxcategorias-index'))->with('error', 'Error al actualizar la relación.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/articuloxcategoria/{id}",
-     *     summary="Eliminar una asignación de artículo",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la asignación",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Asignación eliminada"
-     *     )
-     * )
-     */
+    // Eliminar lógicamente una relación
     public function destroy($id)
     {
         $articuloxcategoria = mod_ArticuloxCategoria::find($id);
+
         if (!$articuloxcategoria) {
-            return response()->json(['error' => 'Asignación no encontrada'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Relación no encontrada'], Response::HTTP_NOT_FOUND);
         }
-        $articuloxcategoria->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+
+        try {
+            $articuloxcategoria->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar la relación'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/articuloxcategoria/eliminados",
-     *     summary="Obtener todas las asignaciones de artículos a categorías eliminados",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de asignaciones eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ArticuloxCategoria"))
-     *     )
-     * )
-     */
-
+    // Mostrar las relaciones eliminadas
     public function deleted()
     {
-        return response()->json(mod_ArticuloxCategoria::onlyTrashed()->get(), Response::HTTP_OK);
+        $articulosxcategoriasEliminados = mod_ArticuloxCategoria::onlyTrashed()->get();
+        return view('VistasCrud.VistasArticuloxCategoria.deleted', compact('articulosxcategoriasEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articuloxcategoria/restore/{id}",
-     *     summary="Restaurar una asignación de artículo eliminada",
-     *     tags={"ArticuloxCategoria"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID de la asignación",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Asignación restaurada"
-     *     )
-     * )
-     */
-
+    // Restaurar una relación eliminada
     public function restore($id)
     {
         $articuloxcategoria = mod_ArticuloxCategoria::withTrashed()->findOrFail($id);
-        $articuloxcategoria->restore();
-        return response()->json($articuloxcategoria, Response::HTTP_OK);
+
+        try {
+            $articuloxcategoria->restore();
+            return redirect()->route('articuloxcategorias.deleted')->with('success', 'Relación restaurada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articuloxcategorias.deleted')->with('error', 'Error al restaurar la relación.');
+        }
+    }
+
+    // Eliminar permanentemente una relación
+    public function forceDelete($id)
+    {
+        $articuloxcategoria = mod_ArticuloxCategoria::withTrashed()->findOrFail($id);
+
+        try {
+            $articuloxcategoria->forceDelete();
+            return redirect()->route('articuloxcategorias.deleted')->with('success', 'Relación eliminada permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articuloxcategorias.deleted')->with('error', 'Error al eliminar permanentemente la relación.');
+        }
     }
 }

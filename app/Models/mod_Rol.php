@@ -20,12 +20,13 @@ class mod_Rol extends Model
 
     public function PERSONAS()
     {
-        return $this->hasMany(mod_RolxPersona::class, 'ROLES_ID');
+        return $this->belongsToMany(mod_Persona::class, 'ROLXPERSONA', 'ID_ROLES', 'ID_PERSONAS');
     }
+    
 
     public function PERMISOS()
     {
-        return $this->belongsToMany(mod_Permiso::class, 'ROLXPERMISO', 'ROLES_ID', 'PERMISOS_ID');
+        return $this->belongsToMany(mod_Permiso::class, 'ROLXPERMISO', 'ID_ROLES', 'ID_PERMISOS');
     }
 
     

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\mod_MovimientosInventario;
+use App\Models\mod_Articulo;
+use App\Models\mod_Inventario;
 use App\Models\mod_RolxPersona;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,17 +27,17 @@ class mod_Usuario extends Model implements Authenticatable
 
     public function PERSONAS()
     {
-        return $this->belongsTo(mod_Persona::class, 'ID_PERSONAS');
+        return $this->belongsTo(mod_Persona::class, 'ID_PERSONAS', 'ID');
     }
     
     public function ROLES()
     {
-        return $this->hasMany(mod_RolxPersona::class, 'ID_USUARIOS');
+        return $this->hasMany(mod_RolxPersona::class, 'ID_USUARIOS', 'ID');
     }
 
     public function ROLXPERSONA()
     {
-        return $this->hasMany(mod_RolxPersona::class, 'ID_USUARIOS');
+        return $this->hasMany(mod_RolxPersona::class, 'ID_USUARIOS', 'ID');
     }
 
         

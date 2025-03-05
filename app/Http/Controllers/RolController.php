@@ -2,206 +2,119 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\mod_Rol;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use OpenApi\Annotations as OA;
+use App\Models\mod_Rol;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Info(
- *    title="API de Roles",
- *    version="1.0.0",
- *    description="API para gestionar roles"
- * )
- */
-
-/**
- * @OA\Schema(
- *     schema="Rol",
- *     type="object",
- *     title="Rol",
- *     description="Modelo de Rol",
- *     required={"DESCRIPCION"},
- *     @OA\Property(property="DESCRIPCION", type="string", description="Descripción del rol")
- * )
- */
 class RolController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/roles",
-     *     summary="Obtener todos los roles",
-     *     tags={"Rol"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de roles",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Rol"))
-     *     )
-     * )
-     */
-    public function index()
+    // Listar roles con opción de búsqueda por descripción
+    public function index(Request $request)
     {
-        return response()->json(mod_Rol::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+
+        try {
+            $query = mod_Rol::query();
+            if (!empty($search)) {
+                $query->where('DESCRIPCION', 'like', "%{$search}%");
+            }
+            $roles = $query->paginate(10);
+            return response()->json($roles, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los roles'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/roles",
-     *     summary="Crear un nuevo rol",
-     *     tags={"Rol"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Rol")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Rol creado exitosamente"
-     *     )
-     * )
-     */
+    // Mostrar el formulario de creación
+    public function create()
+    {
+        return view('VistasCrud.VistasRol.create');
+    }
+
+    // Almacenar un nuevo rol
     public function store(Request $request)
     {
-        $request->validate([
-            'DESCRIPCION' => 'required|string|max:255|unique:ROLES,DESCRIPCION'
+        $validatedData = $request->validate([
+            'DESCRIPCION' => 'required|string|max:255|unique:ROLES,DESCRIPCION',
         ]);
 
-        $rol = mod_Rol::create($request->all());
-        return response()->json($rol, Response::HTTP_CREATED);
+        try {
+            mod_Rol::create($validatedData);
+            return redirect()->route('roles.index')->with('success', 'Rol creado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('roles.index')->with('error', 'No se pudo crear el rol.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/roles/{id}",
-     *     summary="Obtener un rol por ID",
-     *     tags={"Rol"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del rol",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información del rol",
-     *         @OA\JsonContent(ref="#/components/schemas/Rol")
-     *     )
-     * )
-     */
+    // Mostrar un rol específico en JSON
     public function show($id)
     {
-        $rol = mod_Rol::find($id);
-        if (!$rol) {
+        try {
+            $rol = mod_Rol::findOrFail($id);
+            return response()->json($rol, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Rol no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($rol, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/roles/{id}",
-     *     summary="Actualizar un rol",
-     *     tags={"Rol"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del rol",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Rol")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rol actualizado"
-     *     )
-     * )
-     */
+    // Mostrar el formulario de edición
+    public function edit($id)
+    {
+        $rol = mod_Rol::findOrFail($id);
+        return view('VistasCrud.VistasRol.edit', compact('rol'));
+    }
+
+    // Actualizar un rol existente
     public function update(Request $request, $id)
     {
-        $rol = mod_Rol::find($id);
-        if (!$rol) {
-            return response()->json(['error' => 'Rol no encontrado'], Response::HTTP_NOT_FOUND);
-        }
-
-        $request->validate([
-            'DESCRIPCION' => 'required|string|max:255|unique:ROLES,DESCRIPCION,' . $id . ',ID'
+        $rol = mod_Rol::findOrFail($id);
+        
+        $validatedData = $request->validate([
+            'DESCRIPCION' => "required|string|max:255|unique:ROLES,DESCRIPCION,{$id},ID",
         ]);
 
-        $rol->update($request->all());
-        return response()->json($rol, Response::HTTP_OK);
+        try {
+            $rol->update($validatedData);
+            return redirect()->route('roles.index')->with('success', 'Rol actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('roles.index')->with('error', 'Error al actualizar el rol.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/roles/{id}",
-     *     summary="Eliminar un rol",
-     *     tags={"Rol"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del rol",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Rol eliminado"
-     *     )
-     * )
-     */
+    // Eliminar un rol (soft delete)
     public function destroy($id)
     {
         $rol = mod_Rol::find($id);
+
         if (!$rol) {
             return response()->json(['error' => 'Rol no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        $rol->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        try {
+            $rol->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar el rol'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/roles/eliminados",
-     *     summary="Obtener roles eliminados",
-     *     tags={"Rol"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de roles eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Rol"))
-     *     )
-     * )
-     */
+    // Listar roles eliminados (soft deleted)
     public function deleted()
     {
-        return response()->json(mod_Rol::onlyTrashed()->get(), Response::HTTP_OK);
+        $rolesEliminados = mod_Rol::onlyTrashed()->get();
+        return view('VistasCrud.VistasRol.deleted', compact('rolesEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/roles/restore/{id}",
-     *     summary="Restaurar un rol eliminado",
-     *     tags={"Rol"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del rol",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rol restaurado"
-     *     )
-     * )
-     */
+    // Restaurar un rol eliminado
     public function restore($id)
     {
         $rol = mod_Rol::withTrashed()->findOrFail($id);
-        $rol->restore();
-        return response()->json($rol, Response::HTTP_OK);
+
+        try {
+            $rol->restore();
+            return redirect()->route('roles.deleted')->with('success', 'Rol restaurado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('roles.deleted')->with('error', 'Error al restaurar el rol.');
+        }
     }
 }

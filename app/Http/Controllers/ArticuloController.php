@@ -3,218 +3,166 @@
 namespace App\Http\Controllers;
 
 use App\Models\mod_Articulo;
+use App\Models\mod_Inventario;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
-/**
- * @OA\Schema(
- *     schema="Articulo",
- *     type="object",
- *     title="Articulo",
- *     description="Modelo de Artículo",
- *     required={"ID_INVENTARIOS", "NOMBRE", "MARCA", "DESCRIPCION", "FECHACADUCIDAD", "UNIDAD", "CANTIDAD"},
- *     @OA\Property(property="ID_INVENTARIOS", type="integer", description="ID del inventario asociado"),
- *     @OA\Property(property="NOMBRE", type="string", description="Nombre del artículo"),
- *     @OA\Property(property="MARCA", type="string", description="Marca del artículo"),
- *     @OA\Property(property="DESCRIPCION", type="string", description="Descripción del artículo"),
- *     @OA\Property(property="FECHACADUCIDAD", type="string", format="date", description="Fecha de caducidad del artículo"),
- *     @OA\Property(property="UNIDAD", type="string", description="Unidad de medida del artículo"),
- *     @OA\Property(property="CANTIDAD", type="integer", description="Cantidad disponible del artículo")
- * )
- */
+
 class ArticuloController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/articulos",
-     *     summary="Obtener todos los artículos",
-     *     tags={"Articulo"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de artículos",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Articulo"))
-     *     )
-     * )
-     */
-    public function index()
+    // Listar artículos con opción de búsqueda por nombre o marca
+    public function index(Request $request)
     {
-        return response()->json(mod_Articulo::all(), Response::HTTP_OK);
+        $search = $request->query('q');
+        try {
+            $query = mod_Articulo::with('INVENTARIOS');
+            if (!empty($search)) {
+                $query->where('NOMBRE', 'like', "%{$search}%")
+                      ->orWhere('MARCA', 'like', "%{$search}%");
+            }
+            $articulos = $query->paginate(15);
+
+    
+
+            return response()->json($articulos, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener artículos'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/articulos",
-     *     summary="Crear un nuevo artículo",
-     *     tags={"Articulo"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Articulo")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Artículo creado exitosamente"
-     *     )
-     * )
-     */
+    // Mostrar formulario de creación
+    public function create()
+    {
+        $inventarios = mod_Inventario::all();
+        return view('VistasCrud.VistasArticulo.create', compact('inventarios'));
+    }
+
+    // Almacenar un nuevo artículo
+
     public function store(Request $request)
     {
-        $request->validate([
-            'ID_INVENTARIOS' => 'required|integer',
-            'NOMBRE'         => 'required|string|max:255',
-            'MARCA'          => 'required|string|max:255',
-            'DESCRIPCION'    => 'required|string',
-            'FECHACADUCIDAD' => 'required|date',
-            'UNIDAD'         => 'required|string|max:50',
-            'CANTIDAD'       => 'required|integer|min:0'
+        // Validación de datos
+        $validatedData = $request->validate([
+            'ID_INVENTARIOS' => 'required|integer|exists:INVENTARIOS,ID',
+            'NOMBRE' => 'required|string|max:255',
+            'MARCA' => 'nullable|string|max:255',
+            'DESCRIPCION' => 'nullable|string',
+            'FECHACADUCIDAD' => 'nullable|date',
+            'UNIDAD' => 'required|string|max:10',
+            'CANTIDAD' => 'required|integer|min:0'
         ]);
 
-        $articulo = mod_Articulo::create($request->all());
-        return response()->json($articulo, Response::HTTP_CREATED);
+        $validatedData['FECHACADUCIDAD'] = $request->FECHACADUCIDAD ?: null;
+    
+        try {
+            // Intentar crear el artículo
+            mod_Articulo::create($validatedData);
+            return redirect(url('/articulos-index'))->with('success', 'Artículo creado exitosamente.');
+        } catch (\Exception $e) {
+            // Registrar el error en storage/logs/laravel.log
+            Log::error('Error al crear artículo:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input_data' => $validatedData
+            ]);
+    
+            return redirect(url('/articulos-index'))->with('error', 'Error al crear el artículo.');
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/articulos/{id}",
-     *     summary="Obtener un artículo por ID",
-     *     tags={"Articulo"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del artículo",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Información del artículo",
-     *         @OA\JsonContent(ref="#/components/schemas/Articulo")
-     *     )
-     * )
-     */
+    // Mostrar detalles de un artículo en JSON
     public function show($id)
     {
-        $articulo = mod_Articulo::find($id);
-        if (!$articulo) {
+        try {
+            $articulo = mod_Articulo::findOrFail($id);
+            return response()->json($articulo, Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Artículo no encontrado'], Response::HTTP_NOT_FOUND);
         }
-        return response()->json($articulo, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articulos/{id}",
-     *     summary="Actualizar un artículo",
-     *     tags={"Articulo"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del artículo",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Articulo")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Artículo actualizado"
-     *     )
-     * )
-     */
+    // Mostrar formulario de edición
+    public function edit($id)
+    {
+        $articulo = mod_Articulo::findOrFail($id);
+        $inventarios = mod_Inventario::all();
+        return view('VistasCrud.VistasArticulo.edit', compact('articulo', 'inventarios'));
+    }
+
+    // Actualizar artículo existente
     public function update(Request $request, $id)
     {
-        $articulo = mod_Articulo::find($id);
-        if (!$articulo) {
-            return response()->json(['error' => 'Artículo no encontrado'], Response::HTTP_NOT_FOUND);
-        }
-
-        $request->validate([
-            'ID_INVENTARIOS' => 'required|integer',
-            'NOMBRE'         => 'required|string|max:255',
-            'MARCA'          => 'required|string|max:255',
-            'DESCRIPCION'    => 'required|string',
-            'FECHACADUCIDAD' => 'required|date',
-            'UNIDAD'         => 'required|string|max:50',
-            'CANTIDAD'       => 'required|integer|min:0'
+        $articulo = mod_Articulo::findOrFail($id);
+        
+        $validatedData = $request->validate([
+            'ID_INVENTARIOS' => 'required|integer|exists:INVENTARIOS,ID',
+            'NOMBRE' => 'required|string|max:255',
+            'MARCA' => 'nullable|string|max:255',
+            'DESCRIPCION' => 'nullable|string',
+            'FECHACADUCIDAD' => 'nullable|date',
+            'UNIDAD' => 'required|string|max:10',
         ]);
+        
+        $validatedData['FECHACADUCIDAD'] = $request->FECHACADUCIDAD ?: null;
+        
 
-        $articulo->update($request->all());
-        return response()->json($articulo, Response::HTTP_OK);
+
+        try {
+            $articulo->update($validatedData);
+            return redirect(url('/articulos-index'))->with('success', 'Artículo actualizado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect(url('/articulos-index'))->with('error', 'Error al actualizar el artículo.');
+        }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/articulos/{id}",
-     *     summary="Eliminar un artículo",
-     *     tags={"Articulo"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del artículo",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Artículo eliminado"
-     *     )
-     * )
-     */
-
+    // Eliminar un artículo (soft delete)
     public function destroy($id)
     {
         $articulo = mod_Articulo::find($id);
+
         if (!$articulo) {
             return response()->json(['error' => 'Artículo no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        $articulo->delete();
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        try {
+            $articulo->delete();
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al eliminar el artículo'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/articulos/eliminados",
-     *     summary="Obtener todos los artículos eliminados",
-     *     tags={"Articulo"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de artículos eliminados",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Articulo"))
-     *     )
-     * )
-     */
-
+    // Mostrar artículos eliminados
     public function deleted()
     {
-        return response()->json(mod_Articulo::onlyTrashed()->get(), Response::HTTP_OK);
+        $articulosEliminados = mod_Articulo::onlyTrashed()->get();
+        return view('VistasCrud.VistasArticulo.deleted', compact('articulosEliminados'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/articulos/restore/{id}",
-     *     summary="Restaurar un artículo eliminado",
-     *     tags={"Articulo"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="ID del artículo",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Artículo restaurado"
-     *     )
-     * )
-     */
-
+    // Restaurar un artículo eliminado
     public function restore($id)
     {
         $articulo = mod_Articulo::withTrashed()->findOrFail($id);
-        $articulo->restore();
-        return response()->json($articulo, Response::HTTP_OK);
+
+        try {
+            $articulo->restore();
+            return redirect()->route('articulos.deleted')->with('success', 'Artículo restaurado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articulos.deleted')->with('error', 'Error al restaurar el artículo.');
+        }
+    }
+
+    // Eliminación permanente de un artículo
+    public function forceDelete($id)
+    {
+        $articulo = mod_Articulo::withTrashed()->findOrFail($id);
+
+        try {
+            $articulo->forceDelete();
+            return redirect()->route('articulos.deleted')->with('success', 'Artículo eliminado permanentemente.');
+        } catch (\Exception $e) {
+            return redirect()->route('articulos.deleted')->with('error', 'Error al eliminar el artículo permanentemente.');
+        }
     }
 }
